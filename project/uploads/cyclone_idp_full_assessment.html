@@ -1,0 +1,377 @@
+<style>
+:root{--cr:#C8102E;--cm:#FAF6EE;--wh:#FFFFFF;--tx:#1C1208;--mt:#8A7A60;--bd:#E8DFC8;}
+*{box-sizing:border-box;margin:0;padding:0;}
+.outer{display:flex;justify-content:center;padding:24px 16px 40px;background:var(--color-background-secondary);}
+.phone{width:375px;height:820px;background:var(--cm);border-radius:44px;overflow:hidden;border:2px solid var(--color-border-secondary);display:flex;flex-direction:column;}
+.sb{background:var(--cm);padding:13px 24px 4px;display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--tx);flex-shrink:0;position:relative;}
+.ntch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:108px;height:24px;background:var(--tx);border-radius:0 0 16px 16px;}
+.tbr{background:var(--cm);border-bottom:1px solid var(--bd);padding:9px 18px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.logo{font-family:Georgia,serif;font-weight:700;font-size:18px;color:var(--cr);}
+.avs{width:34px;height:34px;border-radius:50%;background:var(--cr);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;font-family:Georgia,serif;}
+.scr{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;}
+.scr::-webkit-scrollbar{display:none;}
+.bnv{background:var(--wh);border-top:1px solid var(--bd);display:flex;flex-shrink:0;padding-bottom:5px;}
+.ntb{flex:1;padding:9px 2px 3px;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;position:relative;}
+.ntb .nl{font-size:9px;font-weight:500;color:var(--mt);}
+.ntb.on .nl{color:var(--cr);font-weight:700;}
+.ntb.on::after{content:'';position:absolute;bottom:0;width:16px;height:2px;background:var(--cr);border-radius:1px;}
+.p18{padding:15px 16px 32px;}
+.ccat{background:var(--wh);border:1.5px solid var(--bd);border-radius:18px;padding:13px 15px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;text-align:left;}
+.ccat:hover{border-color:var(--cr);}
+.cico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.qbar{height:3px;background:var(--bd);border-radius:2px;margin-bottom:14px;overflow:hidden;}
+.qfil{height:100%;border-radius:2px;}
+.qchip{display:inline-block;font-size:9px;font-weight:700;letter-spacing:1.1px;border-radius:20px;padding:3px 9px;margin-bottom:10px;}
+.opt{background:var(--wh);border:1.5px solid var(--bd);border-radius:13px;padding:10px 12px;margin-bottom:7px;cursor:pointer;display:flex;align-items:flex-start;gap:9px;width:100%;text-align:left;}
+.olet{width:20px;height:20px;border-radius:50%;background:var(--bd);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;color:var(--mt);}
+.nxt{width:100%;border:none;border-radius:13px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;font-family:system-ui,sans-serif;}
+.axrow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--bd);}
+.sq{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:2px;}
+.resc{background:var(--wh);border:1.5px solid var(--bd);border-radius:14px;padding:11px 13px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.bk{display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;font-size:12px;font-weight:600;padding:0;margin-bottom:12px;color:var(--mt);}
+</style>
+<div class="outer"><div class="phone">
+<div class="sb"><span>9:41</span><div class="ntch"></div><span>●●●</span></div>
+<div class="tbr"><span class="logo">Cyclone<span style="color:var(--tx)">IDP</span></span><div class="avs">A</div></div>
+<div class="scr" id="con"></div>
+<div class="bnv">
+  <button class="ntb" id="nb-home" onclick="sw('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--mt)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="nl">Home</span></button>
+  <button class="ntb on" id="nb-assessments" onclick="sw('assessments')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--cr)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span class="nl">Assessments</span></button>
+  <button class="ntb" id="nb-resources" onclick="sw('resources')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--mt)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span class="nl">Resources</span></button>
+  <button class="ntb" id="nb-profile" onclick="sw('profile')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--mt)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nl">Profile</span></button>
+</div></div></div>
+<script>
+const TC={'Self-Reflection':{bg:'#EEF0F8',tx:'#3B4A8A'},'Scenario':{bg:'#FEF3E2',tx:'#8A5A00'},'Knowledge':{bg:'#EBF5EC',tx:'#2A6A30'},'Multiple Choice':{bg:'#FCE8EC',tx:'#C8102E'}};
+const CATS={
+  research:{
+    title:'Research',desc:'Research methods, ethics & academic practice',
+    color:'#C8102E',light:'#FCE8EC',
+    axes:['Lit. Review','Res. Design','Collaboration','Data Analysis','Ethics'],
+    full:['Literature Review','Research Design','Collaboration','Data Analysis','Research Ethics'],
+    qs:[
+      ['Self-Reflection',1,"Rate your confidence in designing a research study independently.",[
+        ["I struggle significantly and need constant guidance from others",1],
+        ["I can design studies but require substantial support from my advisor",2],
+        ["I design studies competently but still seek input on key decisions",3],
+        ["I confidently design rigorous studies with minimal external guidance",5]]],
+      ['Self-Reflection',3,"Rate your ability to analyze and interpret complex data.",[
+        ["I find complex data analysis very challenging",1],
+        ["I can perform basic analysis but struggle with complex datasets",2],
+        ["I analyze data well but interpretation sometimes requires support",3],
+        ["I confidently analyze and draw meaningful insights from complex data",5]]],
+      ['Self-Reflection',0,"Rate your confidence in identifying gaps in the literature.",[
+        ["I have difficulty recognizing what is missing in existing research",1],
+        ["I can spot obvious gaps but miss more nuanced ones",2],
+        ["I identify gaps reasonably well after thorough reading",3],
+        ["I systematically identify meaningful gaps that can anchor new research",5]]],
+      ['Scenario',3,"Your dataset shows unexpected patterns. What do you do first?",[
+        ["Discard those data points — they're likely errors",1],
+        ["Report only the patterns that match your hypothesis",1],
+        ["Consult your advisor immediately before taking any action",3],
+        ["Examine the data carefully to determine whether the pattern is meaningful or an artifact",5]]],
+      ['Scenario',2,"A collaborator's results contradict yours. How do you respond?",[
+        ["Assert that your results are correct and push back firmly",1],
+        ["Ignore the discrepancy and proceed with your own findings",1],
+        ["Inform your PI and wait for their guidance",3],
+        ["Arrange a meeting to review both datasets together and identify the source of discrepancy",5]]],
+      ['Scenario',1,"You discover a potential error in your methods after collecting data. What do you do?",[
+        ["Proceed with the data — the error is probably minor",1],
+        ["Quietly adjust your reporting to minimize the impact",1],
+        ["Flag it to your advisor and document it transparently",4],
+        ["Fully assess the error's impact, disclose it, and determine the appropriate course of action",5]]],
+      ['Scenario',2,"Your advisor suggests a direction you disagree with. How do you handle it?",[
+        ["Follow their direction without raising your concerns",1],
+        ["Ignore their suggestion and proceed with your own plan",1],
+        ["Express your concern once, then defer to their judgment",3],
+        ["Have a respectful, evidence-based conversation that acknowledges both perspectives",5]]],
+      ['Knowledge',4,"Which action best reflects ethical research conduct?",[
+        ["Reporting only statistically significant results to strengthen your argument",1],
+        ["Adjusting data points that significantly skew your findings",1],
+        ["Citing sources selectively to support your argument",2],
+        ["Transparently reporting all results, including null or unexpected findings",5]]],
+      ['Knowledge',0,"What is the primary purpose of a literature review?",[
+        ["To demonstrate how much you have read on a topic",1],
+        ["To summarize all existing research in your field",2],
+        ["To argue that prior research in your area is flawed",2],
+        ["To situate your research within existing knowledge and identify gaps",5]]],
+      ['Multiple Choice',4,"Which strategy best improves data reproducibility?",[
+        ["Conducting the experiment multiple times until results are consistent",1],
+        ["Sharing only cleaned and finalized datasets with collaborators",2],
+        ["Using proprietary analysis software that locks in your steps",1],
+        ["Documenting all methods, code, and raw data in a shared, accessible repository",5]]],
+    ],
+    resources:[
+      {cat:'RESEARCH METHODS',title:'Systematic Review Fundamentals',provider:'Graduate College',hours:2},
+      {cat:'DATA SKILLS',title:'Research Data Management',provider:'University Library',hours:1.5},
+      {cat:'RESEARCH ETHICS',title:'Responsible Conduct of Research',provider:'Graduate College',hours:1},
+    ]
+  },
+  teaching:{
+    title:'Teaching',desc:'Pedagogy, curriculum design & student engagement',
+    color:'#9B945F',light:'#F5F3E6',
+    axes:['Adaptability','Pedagogy','Engagement','Assessment','Curriculum'],
+    full:['Adaptability','Pedagogical Knowledge','Student Engagement','Assessment Design','Curriculum Design'],
+    qs:[
+      ['Self-Reflection',2,"Rate your confidence in facilitating classroom discussions.",[
+        ["I struggle to generate meaningful discussion and often end up just lecturing",1],
+        ["I can get discussion going but it's often dominated by a few students",2],
+        ["I facilitate discussions competently but don't always reach everyone",3],
+        ["I confidently facilitate inclusive, productive discussions that engage all students",5]]],
+      ['Self-Reflection',1,"Rate your ability to explain complex concepts clearly.",[
+        ["I often lose students when explaining difficult ideas",1],
+        ["I explain clearly to some students but struggle to reach others",2],
+        ["I explain complex ideas well and use multiple approaches when needed",4],
+        ["I consistently make complex concepts accessible to learners at all levels",5]]],
+      ['Self-Reflection',3,"Rate how effectively you provide constructive feedback to students.",[
+        ["My feedback is minimal or primarily evaluative",1],
+        ["I give feedback but it tends to be general rather than specific",2],
+        ["I provide specific, actionable feedback most of the time",4],
+        ["I give consistently targeted, growth-oriented feedback that students can act on",5]]],
+      ['Scenario',2,"A student expresses confusion about an assignment. What do you do?",[
+        ["Tell them to re-read the instructions carefully",1],
+        ["Quickly re-explain the assignment verbally",2],
+        ["Break down the assignment step-by-step and check for understanding",4],
+        ["Ask clarifying questions to understand the confusion, then co-construct a clear path forward",5]]],
+      ['Scenario',0,"Your class seems disengaged during a lecture. What's your next step?",[
+        ["Continue — students are responsible for their own engagement",1],
+        ["Speak louder and pace more slowly",1],
+        ["Call on individual students to re-engage the group",2],
+        ["Pause and shift to an interactive activity directly connected to the content",5]]],
+      ['Scenario',1,"A student challenges your explanation in front of the class. How do you respond?",[
+        ["Firmly reassert your original explanation",1],
+        ["Dismiss the challenge to maintain authority in the room",1],
+        ["Acknowledge the question and say you'll revisit it after class",3],
+        ["Thank the student, engage with the challenge openly, and use it as a teaching moment",5]]],
+      ['Scenario',0,"You notice participation is dominated by a few students. What do you do?",[
+        ["Let it continue — some students are naturally more vocal",1],
+        ["Remind the class that participation matters for their grade",2],
+        ["Cold-call quieter students to redistribute participation",2],
+        ["Restructure discussion using think-pair-share or anonymous polling to include everyone",5]]],
+      ['Knowledge',4,"Which strategy best supports inclusive teaching?",[
+        ["Providing all students with identical materials and assessments",1],
+        ["Grading on a curve to account for ability differences",1],
+        ["Setting lower expectations for students with learning differences",1],
+        ["Offering multiple means of representation, engagement, and expression (UDL principles)",5]]],
+      ['Knowledge',4,"What is backward design in curriculum planning?",[
+        ["Reviewing previous course materials for improvement before the semester",1],
+        ["Starting the semester with a review of foundational content",2],
+        ["Designing your course starting with the hardest material and working backward",2],
+        ["Beginning with desired learning outcomes, then designing assessments and content accordingly",5]]],
+      ['Multiple Choice',3,"What is the primary purpose of formative assessment?",[
+        ["To assign grades at key intervals throughout the semester",1],
+        ["To evaluate whether students have met learning objectives at semester end",2],
+        ["To compare student performance against a national benchmark",1],
+        ["To provide ongoing feedback that guides and improves student learning in real time",5]]],
+    ],
+    resources:[
+      {cat:'PEDAGOGY',title:'Evidence-Based Teaching Strategies',provider:'CELT',hours:2.5},
+      {cat:'STUDENT SUCCESS',title:'Inclusive Classroom Practices',provider:'Graduate College',hours:2},
+      {cat:'ASSESSMENT',title:'Designing Learning Assessments',provider:'CELT',hours:1.5},
+    ]
+  },
+  communication:{
+    title:'Communication',desc:'Oral, written & professional communication',
+    color:'#524727',light:'#F0EAE0',
+    axes:['Oral Pres.','Writing','Prof. Conduct','Listening','Networking'],
+    full:['Oral Presentation','Written Communication','Professional Conduct','Active Listening','Networking'],
+    qs:[
+      ['Self-Reflection',3,"Rate your confidence in communicating your ideas in group settings.",[
+        ["I often feel anxious and struggle to articulate ideas clearly in groups",1],
+        ["I can share ideas but feel uncertain about how they land",2],
+        ["I communicate comfortably in most group settings",3],
+        ["I confidently contribute ideas in groups and help shape productive discussions",5]]],
+      ['Self-Reflection',4,"Rate your ability to adapt your message to different audiences.",[
+        ["I present information the same way regardless of who I'm talking to",1],
+        ["I make minor adjustments but rarely rethink my core approach",2],
+        ["I adapt my language and examples depending on the audience",4],
+        ["I fully tailor content, tone, and depth of my message for each specific audience",5]]],
+      ['Self-Reflection',0,"Rate your confidence in giving presentations.",[
+        ["I find presentations very stressful and struggle with delivery",1],
+        ["I can get through presentations but lack confidence and polish",2],
+        ["I present competently and handle most situations with ease",4],
+        ["I present with strong presence, clarity, and genuine command of the room",5]]],
+      ['Scenario',0,"Your audience looks confused during a presentation. What do you do?",[
+        ["Keep going — you don't want to lose your momentum",1],
+        ["Speak more slowly and repeat what you just said",2],
+        ["Ask a yes/no check-in question to gauge understanding",3],
+        ["Pause, invite questions, and reframe the concept from a different angle",5]]],
+      ['Scenario',1,"A collaborator misinterprets your email. What's your next step?",[
+        ["Assume they'll figure it out and wait to see what happens",1],
+        ["Apologize even though your message was clear",1],
+        ["Send a follow-up email re-clarifying what you meant",2],
+        ["Reach out directly — call or meet — to resolve the misunderstanding and prevent recurrence",5]]],
+      ['Scenario',2,"You need to communicate a delay to your advisor. How do you handle it?",[
+        ["Wait until the deadline passes, then explain what happened",1],
+        ["Send a vague message about needing a bit more time",2],
+        ["Email your advisor as soon as possible with an honest update",4],
+        ["Proactively notify your advisor, explain the reason clearly, and propose a revised timeline",5]]],
+      ['Scenario',2,"A peer gives you critical feedback on your work. How do you respond?",[
+        ["Defend your work immediately",1],
+        ["Thank them but internally dismiss the feedback",1],
+        ["Listen quietly, then follow up with clarifying questions later",3],
+        ["Actively listen, ask follow-up questions in the moment, and reflect on how to apply it",5]]],
+      ['Knowledge',1,"Which strategy best improves clarity in academic writing?",[
+        ["Using sophisticated vocabulary to demonstrate expertise",1],
+        ["Writing long, detailed sentences that cover all nuances",1],
+        ["Structuring your argument clearly before you start writing",4],
+        ["Using precise language, clear topic sentences, and logical paragraph structure",5]]],
+      ['Knowledge',3,"What is active listening?",[
+        ["Taking detailed written notes during every conversation",2],
+        ["Staying silent while the other person speaks",1],
+        ["Preparing your response while the other person is still talking",1],
+        ["Fully attending to, understanding, and thoughtfully responding to what someone is saying",5]]],
+      ['Multiple Choice',4,"Which technique best helps maintain audience engagement during a presentation?",[
+        ["Reading from your slides to ensure accuracy",1],
+        ["Including as much content as possible to be thorough",1],
+        ["Telling personal anecdotes unrelated to your topic",1],
+        ["Using strategic pauses, direct questions, and varied pacing to keep the audience involved",5]]],
+    ],
+    resources:[
+      {cat:'PROFESSIONALISM',title:'Public Speaking for Researchers',provider:'Graduate College',hours:2.5},
+      {cat:'WRITING',title:'Academic Writing & Editing',provider:'Writing Center',hours:2},
+      {cat:'NETWORKING',title:'Professional Networking Strategies',provider:'Career Services',hours:1.5},
+    ]
+  },
+  career:{
+    title:'Career',desc:'Career planning, goal setting & professional growth',
+    color:'#7A5800',light:'#FEF7E0',
+    axes:['Goal Setting','Networking','Self-Advocacy','Career Plan','Industry'],
+    full:['Goal Setting','Networking','Self-Advocacy','Career Planning','Industry Knowledge'],
+    qs:[
+      ['Self-Reflection',3,"Rate your confidence in navigating your career path.",[
+        ["I feel lost and unsure of where I'm heading professionally",1],
+        ["I have a vague sense of direction but no clear plan",2],
+        ["I have a general plan but still carry significant uncertainties",3],
+        ["I feel confident in my direction and maintain a structured plan I actively revisit",5]]],
+      ['Self-Reflection',1,"Rate your ability to network professionally.",[
+        ["I avoid networking — it feels inauthentic or uncomfortable",1],
+        ["I network occasionally but don't follow up or maintain relationships",2],
+        ["I network regularly and maintain some professional relationships",4],
+        ["I actively build and sustain a diverse professional network with intention",5]]],
+      ['Self-Reflection',2,"Rate your confidence in preparing application materials (CV, cover letter, etc.).",[
+        ["I find application materials very daunting and don't know where to start",1],
+        ["I can put materials together but they often feel generic",2],
+        ["I prepare tailored, polished materials for most applications",4],
+        ["I craft highly targeted, compelling materials that clearly communicate my value",5]]],
+      ['Scenario',3,"You receive a rejection email after applying for a position. What's your next step?",[
+        ["Assume the process was unfair and move on without reflection",1],
+        ["Take a break from job searching until you feel ready again",2],
+        ["Ask your advisor if they can contact the organization on your behalf",2],
+        ["Request feedback from the recruiter and use it to strategically refine your approach",5]]],
+      ['Scenario',4,"You're unsure how your academic skills translate outside academia. What do you do?",[
+        ["Assume they don't and limit your job search to academic positions",1],
+        ["Ask friends what they think your skills are worth",1],
+        ["Review generic job postings to guess which skills might transfer",2],
+        ["Conduct informational interviews with professionals in target sectors to learn how your skills map",5]]],
+      ['Scenario',2,"A recruiter asks you to describe your strengths. How do you respond?",[
+        ["Give a vague, humble answer to avoid seeming arrogant",1],
+        ["List every skill you have to cover all bases",1],
+        ["Mention strengths you've heard are generally valued in the field",2],
+        ["Offer 2-3 well-evidenced strengths tied directly to the role's requirements",5]]],
+      ['Scenario',0,"You're overwhelmed by too many job options. What's your first move?",[
+        ["Apply to everything and see what sticks",1],
+        ["Choose the role with the highest salary",1],
+        ["Ask your advisor to help you decide",2],
+        ["Reflect on your values, strengths, and long-term goals to identify the roles that best align",5]]],
+      ['Knowledge',4,"What is the primary purpose of an informational interview?",[
+        ["A formal job interview for a specific open position",1],
+        ["A performance review conducted by a supervisor",1],
+        ["A way to ask someone for a job reference",2],
+        ["A conversation to learn about a career path, role, or organization from someone working in it",5]]],
+      ['Knowledge',0,"Which behavior best demonstrates strong professionalism?",[
+        ["Always agreeing with supervisors to avoid conflict",1],
+        ["Prioritizing visibility over output in the workplace",1],
+        ["Socializing extensively to build a positive reputation",2],
+        ["Completing work on time and communicating proactively about challenges",5]]],
+      ['Multiple Choice',1,"What makes a strong elevator pitch?",[
+        ["Covering your full CV so nothing important is missed",1],
+        ["Using technical jargon to quickly establish credibility",1],
+        ["Being memorable by focusing on personality rather than work",2],
+        ["A concise, compelling statement of who you are, what you do, and why it matters — tailored to the listener",5]]],
+    ],
+    resources:[
+      {cat:'CAREER PREP',title:'Grant Writing 101: NIH & NSF',provider:'Office of Research',hours:1.5},
+      {cat:'NETWORKING',title:'Professional Networking Strategies',provider:'Career Services',hours:1.5},
+      {cat:'CAREER PLANNING',title:'Industry Career Pathways for PhDs',provider:'Graduate College',hours:2},
+    ]
+  }
+};
+const ICO={
+  research:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+  teaching:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
+  communication:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  career:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`
+};
+const S={tab:'assessments',cat:null,qIdx:0,selOpt:null,selScore:null,answers:[],completed:{}};
+const $=id=>document.getElementById(id);
+function radar(scores,axes,color){
+  const cx=140,cy=118,r=63,n=axes.length;
+  function pt(ai,lv){const a=(ai/n)*2*Math.PI-Math.PI/2;return[cx+(lv/5)*r*Math.cos(a),cy+(lv/5)*r*Math.sin(a)];}
+  let g='',al='',lb='';
+  for(let lv=1;lv<=5;lv++){const pts=axes.map((_,i)=>pt(i,lv));g+=`<polygon points="${pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="#E8DFC8" stroke-width="${lv===5?1.5:0.7}"/>`;}
+  axes.forEach((_,i)=>{
+    const p=pt(i,5);al+=`<line x1="${cx}" y1="${cy}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" stroke="#E8DFC8" stroke-width="1"/>`;
+    const lp=pt(i,6.35);
+    const anch=lp[0]<cx-8?'end':lp[0]>cx+8?'start':'middle';
+    const dy=lp[1]<cy-8?-2:lp[1]>cy+8?13:6;
+    lb+=`<text x="${lp[0].toFixed(1)}" y="${(lp[1]+dy).toFixed(1)}" text-anchor="${anch}" font-size="9" fill="#8A7A60" font-family="system-ui,sans-serif">${axes[i]}</text>`;
+  });
+  const sp=scores.map((s,i)=>pt(i,Math.max(s,0.25)));
+  return`<svg width="280" height="244" viewBox="0 0 280 244" style="display:block;margin:0 auto">${g}${al}<polygon points="${sp.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="${color}1F" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>${sp.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="4.5" fill="${color}" stroke="white" stroke-width="1.5"/>`).join('')}${lb}</svg>`;
+}
+function axSc(catId,ans){
+  const cat=CATS[catId];const tot=Array(5).fill(0),cnt=Array(5).fill(0);
+  ans.forEach((sc,i)=>{const ax=cat.qs[i][1];tot[ax]+=sc;cnt[ax]++;});
+  return tot.map((t,i)=>cnt[i]?+(t/cnt[i]).toFixed(1):0);
+}
+function rl(){
+  let h=`<div class="p18"><p style="font-size:10px;font-weight:700;letter-spacing:1.4px;color:var(--cr);">SKILL DEVELOPMENT</p><h2 style="font-family:Georgia,serif;font-size:22px;font-weight:700;color:var(--tx);margin:4px 0 3px;">Skill Assessments</h2><p style="font-size:12px;color:var(--mt);margin-bottom:16px;">Evaluate your competencies across four key areas.</p>`;
+  Object.entries(CATS).forEach(([id,cat])=>{
+    const done=S.completed[id];const avg=done?(done.reduce((a,b)=>a+b,0)/done.length).toFixed(1):null;
+    h+=`<button class="ccat" onclick="startQ('${id}')"><div class="cico" style="background:${cat.light};color:${cat.color};">${ICO[id]}</div><div style="flex:1;"><div style="font-weight:700;font-size:14px;color:var(--tx);margin-bottom:2px;">${cat.title}</div><div style="font-size:11px;color:var(--mt);margin-bottom:4px;">${cat.desc}</div>${done?`<span style="font-size:9px;font-weight:700;background:${cat.light};color:${cat.color};border-radius:20px;padding:2px 8px;letter-spacing:0.5px;">COMPLETED · Avg ${avg} / 5</span>`:`<span style="font-size:9px;font-weight:700;color:var(--mt);letter-spacing:0.5px;">10 QUESTIONS · ~8 MIN</span>`}</div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--mt)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>`;
+  });
+  $('con').innerHTML=h+'</div>';$('con').scrollTop=0;
+}
+function rq(){
+  const cat=CATS[S.cat];const[type,,qtext,opts]=cat.qs[S.qIdx];
+  const tc=TC[type]||{bg:'#eee',tx:'#333'};
+  const pct=Math.round(S.qIdx/cat.qs.length*100);
+  const isLast=S.qIdx===cat.qs.length-1;const hasSel=S.selOpt!==null;
+  let h=`<div class="p18"><button class="bk" onclick="goBack()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>${cat.title} Assessment</button><div style="display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--mt);margin-bottom:6px;"><span>Question ${S.qIdx+1} of ${cat.qs.length}</span><span style="color:${cat.color};">${pct}% complete</span></div><div class="qbar"><div class="qfil" style="width:${pct}%;background:${cat.color};"></div></div><span class="qchip" style="background:${tc.bg};color:${tc.tx};">${type.toUpperCase()}</span><p style="font-size:14px;font-weight:600;color:var(--tx);line-height:1.5;margin-bottom:15px;">${qtext}</p>`;
+  ['A','B','C','D'].forEach((L,i)=>{
+    const sel=S.selOpt===i;
+    h+=`<button class="opt" onclick="selO(${i},${opts[i][1]})" style="${sel?`border-color:${cat.color};border-width:2px;background:${cat.light};`:''}"><div class="olet" style="${sel?`background:${cat.color};color:#fff;`:''}">${L}</div><span style="font-size:13px;line-height:1.4;color:var(--tx);">${opts[i][0]}</span></button>`;
+  });
+  h+=`<button class="nxt" onclick="${isLast?'finQ()':'nextQ()'}" style="background:${hasSel?cat.color:'#E8DFC8'};color:${hasSel?'#fff':'#8A7A60'};${!hasSel?'pointer-events:none;':''}">${isLast?'See My Results →':'Next Question →'}</button></div>`;
+  $('con').innerHTML=h;$('con').scrollTop=0;
+}
+function rr(){
+  const cat=CATS[S.cat];const ans=S.completed[S.cat];const sc=axSc(S.cat,ans);
+  const overall=(sc.reduce((a,b)=>a+b,0)/sc.length).toFixed(1);
+  const idx=sc.map((s,i)=>({s,i,n:cat.full[i]})).sort((a,b)=>b.s-a.s);
+  function sqrs(s){return Array(5).fill(0).map((_,i)=>`<span class="sq" style="background:${i<Math.round(s)?cat.color:'#E8DFC8'};"></span>`).join('');}
+  let h=`<div class="p18"><button class="bk" onclick="goBack()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>Back to Assessments</button><p style="font-size:10px;font-weight:700;letter-spacing:1.4px;color:${cat.color};margin-bottom:3px;">ASSESSMENT COMPLETE</p><h2 style="font-family:Georgia,serif;font-size:21px;font-weight:700;color:var(--tx);margin-bottom:3px;">${cat.title} Results</h2><p style="font-size:13px;color:var(--mt);margin-bottom:14px;">Overall score: <strong style="color:${cat.color};font-size:17px;">${overall}</strong><span style="font-size:12px;"> / 5</span></p><div style="background:var(--wh);border:1.5px solid var(--bd);border-radius:18px;padding:14px 8px;margin-bottom:11px;">${radar(sc,cat.axes,cat.color)}</div><div style="background:var(--wh);border:1.5px solid var(--bd);border-radius:18px;padding:13px;margin-bottom:11px;"><p style="font-size:9px;font-weight:700;letter-spacing:1.3px;color:var(--mt);margin-bottom:8px;">SKILL BREAKDOWN</p>${cat.full.map((ax,i)=>`<div class="axrow"><span style="font-size:12px;color:var(--tx);">${ax}</span><div style="display:flex;align-items:center;gap:7px;">${sqrs(sc[i])}<span style="font-size:12px;font-weight:700;color:${cat.color};min-width:22px;">${sc[i]}</span></div></div>`).join('')}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;"><div style="background:var(--wh);border:1.5px solid var(--bd);border-radius:14px;padding:12px;"><p style="font-size:9px;font-weight:700;letter-spacing:1px;color:#2A6A30;margin-bottom:8px;">STRENGTHS</p>${idx.slice(0,2).map(x=>`<div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:6px;"><div style="width:6px;height:6px;border-radius:50%;background:#2A6A30;flex-shrink:0;margin-top:3px;"></div><span style="font-size:11px;color:var(--tx);line-height:1.3;">${x.n}</span></div>`).join('')}</div><div style="background:var(--wh);border:1.5px solid var(--bd);border-radius:14px;padding:12px;"><p style="font-size:9px;font-weight:700;letter-spacing:1px;color:var(--cr);margin-bottom:8px;">GROWTH AREAS</p>${idx.slice(-2).map(x=>`<div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:6px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--cr);flex-shrink:0;margin-top:3px;"></div><span style="font-size:11px;color:var(--tx);line-height:1.3;">${x.n}</span></div>`).join('')}</div></div><p style="font-size:9px;font-weight:700;letter-spacing:1.3px;color:var(--mt);margin-bottom:9px;">RECOMMENDED RESOURCES</p>${cat.resources.map(r=>`<div class="resc"><div style="flex:1;"><p style="font-size:9px;font-weight:700;letter-spacing:1px;color:${cat.color};margin-bottom:2px;">${r.cat}</p><p style="font-weight:600;font-size:13px;color:var(--tx);margin-bottom:2px;">${r.title}</p><p style="font-size:11px;color:var(--mt);">${r.provider} · ${r.hours}h</p></div><button style="background:${cat.color};border:none;border-radius:20px;padding:6px 13px;font-size:11px;color:#fff;font-weight:700;cursor:pointer;white-space:nowrap;font-family:system-ui;">Enroll</button></div>`).join('')}<button onclick="startQ('${S.cat}')" style="width:100%;background:none;border:1.5px solid ${cat.color};border-radius:13px;padding:13px;font-size:13px;font-weight:700;color:${cat.color};cursor:pointer;margin-top:4px;font-family:system-ui;">Retake Assessment</button></div>`;
+  $('con').innerHTML=h;$('con').scrollTop=0;
+}
+function startQ(id){S.cat=id;S.qIdx=0;S.selOpt=null;S.selScore=null;S.answers=[];rq();}
+function selO(i,score){S.selOpt=i;S.selScore=score;rq();}
+function nextQ(){if(S.selOpt===null)return;S.answers.push(S.selScore);S.qIdx++;S.selOpt=null;S.selScore=null;rq();}
+function finQ(){if(S.selOpt===null)return;S.answers.push(S.selScore);S.completed[S.cat]=[...S.answers];rr();}
+function goBack(){S.cat=null;S.answers=[];S.selOpt=null;S.selScore=null;rl();}
+function sw(t){
+  S.tab=t;
+  document.querySelectorAll('.ntb').forEach(b=>{b.classList.remove('on');const s=b.querySelector('svg');if(s)s.setAttribute('stroke','var(--mt)');});
+  const nb=$(`nb-${t}`);if(nb){nb.classList.add('on');const s=nb.querySelector('svg');if(s)s.setAttribute('stroke','var(--cr)');}
+  if(t==='assessments'){rl();}
+  else if(t==='home'){
+    const entries=Object.entries(S.completed);
+    const allSc=entries.flatMap(([id,ans])=>ans);
+    const overallPct=allSc.length?Math.round(allSc.reduce((a,b)=>a+b,0)/allSc.length*20):0;
+    $('con').innerHTML=`<div class="p18"><p style="font-size:12px;color:var(--mt);">Monday, October 12</p><h1 style="font-family:Georgia,serif;font-size:22px;font-weight:700;color:var(--tx);margin:3px 0 16px;">Good morning, <span style="color:var(--cr);">Alex</span></h1><div style="background:var(--cr);border-radius:20px;padding:18px;margin-bottom:16px;text-align:center;"><p style="font-size:9px;letter-spacing:1.4px;color:rgba(255,255,255,0.55);margin-bottom:6px;">OVERALL PORTFOLIO</p><p style="font-family:Georgia,serif;font-size:44px;font-weight:700;color:#fff;line-height:1;">${overallPct||68}%</p><p style="font-size:11px;color:rgba(255,255,255,0.65);margin-top:4px;">${entries.length} of 4 assessments complete</p></div>${entries.length?`<p style="font-size:9px;font-weight:700;letter-spacing:1.3px;color:var(--mt);margin-bottom:9px;">ASSESSMENT SCORES</p>${entries.map(([id,ans])=>{const cat=CATS[id];const avg=(ans.reduce((a,b)=>a+b,0)/ans.length).toFixed(1);return`<div style="background:var(--wh);border:1.5px solid var(--bd);border-radius:14px;padding:11px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-weight:600;color:var(--tx);">${cat.title}</span><span style="font-size:15px;font-weight:700;color:${cat.color};">${avg}<span style="font-size:11px;color:var(--mt);">/5</span></span></div>`}).join('')}`:`<p style="font-size:13px;color:var(--mt);text-align:center;padding:24px 0;line-height:1.5;">Complete assessments to see<br>your progress here.</p>`}<button onclick="sw('assessments')" style="width:100%;background:var(--cr);border:none;border-radius:14px;padding:14px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:system-ui;margin-top:8px;">Go to Assessments →</button></div>`;
+  } else {
+    $('con').innerHTML=`<div style="padding:60px 16px;text-align:center;"><p style="font-size:14px;color:var(--mt);">${t.charAt(0).toUpperCase()+t.slice(1)}</p><p style="font-size:12px;color:var(--bd);margin-top:4px;">Coming soon</p></div>`;
+  }
+  $('con').scrollTop=0;
+}
+rl();
+</script>

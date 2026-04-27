@@ -1,0 +1,138 @@
+<style>
+:root{--cr:#C8102E;--cm:#FAF6EE;--wh:#FFFFFF;--tx:#1C1208;--mt:#8A7A60;--bd:#E8DFC8;--ol:#9B945F;--br:#524727;--gd:#7A5800;}
+*{box-sizing:border-box;margin:0;padding:0;}
+.outer{display:flex;justify-content:center;padding:24px 16px 40px;background:var(--color-background-secondary);}
+.phone{width:375px;height:820px;background:var(--cm);border-radius:44px;overflow:hidden;border:2px solid var(--color-border-secondary);display:flex;flex-direction:column;}
+.sb{background:var(--cm);padding:13px 24px 4px;display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--tx);flex-shrink:0;position:relative;}
+.ntch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:108px;height:24px;background:var(--tx);border-radius:0 0 16px 16px;}
+.tbr{background:var(--cm);border-bottom:1px solid var(--bd);padding:9px 18px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.logo{font-family:Georgia,serif;font-weight:700;font-size:18px;color:var(--cr);}
+.avs{width:34px;height:34px;border-radius:50%;background:var(--cr);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;font-family:Georgia,serif;}
+.scr{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;}
+.scr::-webkit-scrollbar{display:none;}
+.bnv{background:var(--wh);border-top:1px solid var(--bd);display:flex;flex-shrink:0;padding-bottom:5px;}
+.ntb{flex:1;padding:9px 2px 3px;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;position:relative;}
+.ntb .nl{font-size:9px;font-weight:500;color:var(--mt);}
+.ntb.on .nl{color:var(--cr);font-weight:700;}
+.ntb.on::after{content:'';position:absolute;bottom:0;width:16px;height:2px;background:var(--cr);border-radius:1px;}
+.p18{padding:15px 16px 32px;}
+.ftabs{display:flex;gap:8px;margin-bottom:16px;}
+.ftb{padding:8px 16px;border-radius:8px;font-size:11px;font-weight:700;letter-spacing:0.6px;cursor:pointer;border:1.5px solid var(--bd);background:var(--wh);color:var(--mt);font-family:system-ui,sans-serif;}
+.ftb.on{background:var(--tx);border-color:var(--tx);color:#fff;}
+.rcard{background:var(--wh);border:1.5px solid var(--bd);border-radius:18px;padding:16px;margin-bottom:12px;}
+.rcat{font-size:10px;font-weight:700;letter-spacing:1.3px;margin-bottom:4px;}
+.rtit{font-weight:700;font-size:15px;color:var(--tx);line-height:1.3;margin-bottom:4px;}
+.rmeta{font-size:12px;color:var(--mt);margin-bottom:12px;}
+.enb{background:var(--tx);border:none;border-radius:8px;padding:9px 18px;font-size:12px;color:#fff;font-weight:700;cursor:pointer;font-family:system-ui,sans-serif;}
+.rib{background:none;border:1.5px solid var(--tx);border-radius:8px;padding:8px 16px;font-size:12px;color:var(--tx);font-weight:700;cursor:pointer;font-family:system-ui,sans-serif;}
+.bdg{display:inline-flex;align-items:center;gap:5px;background:#FEF7E0;border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;color:var(--gd);letter-spacing:0.5px;margin-bottom:10px;}
+.sechd{font-size:10px;font-weight:700;letter-spacing:1.4px;color:var(--mt);margin:18px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd);}
+.sechd:first-child{margin-top:0;}
+.notice{background:#FEF7E0;border:1px solid #E8D090;border-radius:12px;padding:11px 13px;margin-bottom:16px;display:flex;gap:8px;align-items:flex-start;}
+</style>
+<div class="outer"><div class="phone">
+<div class="sb"><span>9:41</span><div class="ntch"></div><span>●●●</span></div>
+<div class="tbr"><span class="logo">Cyclone<span style="color:var(--tx)">IDP</span></span><div class="avs">A</div></div>
+<div class="scr" id="con"></div>
+<div class="bnv">
+  <button class="ntb" id="nb-home" onclick="sw('home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--mt)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="nl">Home</span></button>
+  <button class="ntb" id="nb-assessments" onclick="sw('assessments')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--mt)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span class="nl">Assessments</span></button>
+  <button class="ntb on" id="nb-resources" onclick="sw('resources')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--cr)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span class="nl">Resources</span></button>
+  <button class="ntb" id="nb-profile" onclick="sw('profile')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--mt)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nl">Profile</span></button>
+</div></div></div>
+<script>
+const WORKSHOPS={
+  research:[
+    {cat:'RESEARCH',color:'var(--cr)',title:'Responsible Conduct of Research Training',provider:'Graduate College',hours:'3.0 hrs',btn:'enroll'},
+    {cat:'RESEARCH',color:'var(--cr)',title:'Grant Proposal Development: NIH & NSF',provider:'Office of Research',hours:'2.5 hrs',btn:'enroll'},
+    {cat:'RESEARCH',color:'var(--cr)',title:'Research Data Management & Open Science',provider:'University Library',hours:'1.5 hrs',btn:'enroll'},
+    {cat:'RESEARCH',color:'var(--cr)',title:'Literature Review Strategies for Grad Students',provider:'University Library',hours:'1.0 hr',btn:'enroll'},
+  ],
+  teaching:[
+    {cat:'TEACHING',color:'var(--ol)',title:'Future Faculty Preparation Program',provider:'CELT',hours:'4.0 hrs',btn:'enroll'},
+    {cat:'TEACHING',color:'var(--ol)',title:'Course Design Institute',provider:'CELT',hours:'6.0 hrs',btn:'interest'},
+    {cat:'TEACHING',color:'var(--ol)',title:'Inclusive Pedagogy & Universal Design',provider:'CELT',hours:'2.0 hrs',btn:'enroll'},
+    {cat:'TEACHING',color:'var(--ol)',title:'Assessment for Student Learning',provider:'CELT',hours:'2.0 hrs',btn:'enroll'},
+  ],
+  communication:[
+    {cat:'COMMUNICATION',color:'var(--br)',title:'Public Speaking for Researchers',provider:'Graduate College',hours:'2.5 hrs',btn:'enroll'},
+    {cat:'COMMUNICATION',color:'var(--br)',title:'Academic Writing for Publication',provider:'Writing Center',hours:'3.0 hrs',btn:'enroll'},
+    {cat:'COMMUNICATION',color:'var(--br)',title:'Three-Minute Thesis (3MT) Preparation',provider:'Graduate College',hours:'1.5 hrs',btn:'interest'},
+    {cat:'COMMUNICATION',color:'var(--br)',title:'Communicating Science to the Public',provider:'Center for Comm. Excellence',hours:'2.0 hrs',btn:'enroll'},
+  ],
+  career:[
+    {cat:'CAREER PREP',color:'var(--gd)',title:'Academic Job Market Preparation',provider:'Graduate College',hours:'2.0 hrs',btn:'enroll'},
+    {cat:'CAREER PREP',color:'var(--gd)',title:'Non-Academic Career Pathways',provider:'Graduate College',hours:'1.5 hrs',btn:'enroll'},
+    {cat:'CAREER PREP',color:'var(--gd)',title:'Networking for Graduate Students',provider:'Career Services',hours:'1.0 hr',btn:'enroll'},
+    {cat:'CAREER PREP',color:'var(--gd)',title:'CV, Resume & Cover Letter Workshop',provider:'Career Services',hours:'1.5 hrs',btn:'enroll'},
+  ]
+};
+const MICRO=[
+  {cat:'RESEARCH',color:'var(--cr)',title:'Responsible Conduct of Research',provider:'Graduate College · CELT',duration:'Self-paced · ~3 hrs',desc:'Covers research ethics, data integrity, mentoring, and authorship standards.'},
+  {cat:'RESEARCH',color:'var(--cr)',title:'Research Data Management',provider:'University Library',duration:'Self-paced · ~2 hrs',desc:'Foundations of data documentation, storage, sharing, and reproducibility.'},
+  {cat:'TEACHING',color:'var(--ol)',title:'Evidence-Based Teaching Practices',provider:'CELT',duration:'Self-paced · ~4 hrs',desc:'Apply research-backed strategies for active learning, inclusion, and assessment.'},
+  {cat:'TEACHING',color:'var(--ol)',title:'Inclusive Classroom Design',provider:'CELT',duration:'Self-paced · ~3 hrs',desc:'Universal Design for Learning (UDL) principles for equitable instruction.'},
+  {cat:'COMMUNICATION',color:'var(--br)',title:'Science Communication',provider:'Ctr. for Communication Excellence',duration:'Self-paced · ~2.5 hrs',desc:'Techniques for explaining complex research to diverse audiences.'},
+  {cat:'COMMUNICATION',color:'var(--br)',title:'Academic Writing & Publishing',provider:'Graduate College · Writing Center',duration:'Self-paced · ~3 hrs',desc:'Strategies for scholarly writing, peer review, and publication readiness.'},
+  {cat:'CAREER PREP',color:'var(--gd)',title:'Career Readiness for Graduate Students',provider:'Graduate College · Career Services',duration:'Self-paced · ~2 hrs',desc:'Goal-setting, job search strategy, and professional identity development.'},
+  {cat:'CAREER PREP',color:'var(--gd)',title:'Leadership in Academia',provider:'Gerdin Leaders Academy · CELT',duration:'Self-paced · ~6 hrs',desc:'Competency-based leadership across ethics, collaboration, and service.'},
+  {cat:'RESEARCH',color:'var(--cr)',title:'Translational AI Fundamentals',provider:'ISU AI Center',duration:'Self-paced · ~2 hrs',desc:'Applying AI tools responsibly in research and academic contexts.'},
+  {cat:'CAREER PREP',color:'var(--gd)',title:'Grant Writing Fundamentals',provider:'Office of Research',duration:'Self-paced · ~2 hrs',desc:'Proposal structure, budget justification, and funding agency expectations.'},
+];
+const S={res:'micro'};
+const $=id=>document.getElementById(id);
+
+function badge(){return`<div class="bdg"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>ISU DIGITAL BADGE</div>`;}
+
+function rcard(r,isMicro){
+  const btn=r.btn==='enroll'?`<button class="enb">Enroll Now</button>`:`<button class="rib">Register Interest</button>`;
+  const mc=isMicro;
+  return`<div class="rcard">${mc?badge():''}<p class="rcat" style="color:${r.color};">${r.cat}</p><p class="rtit">${r.title}</p><p class="rmeta">${r.provider} · ${mc?r.duration:r.hours}</p>${mc&&r.desc?`<p style="font-size:11px;color:var(--mt);margin-bottom:12px;line-height:1.5;">${r.desc}</p>`:''}<button class="enb">Enroll Now</button></div>`;
+}
+
+function renderResources(){
+  const isMicro=S.res==='micro';
+  let h=`<div class="p18">
+    <h2 style="font-family:Georgia,serif;font-size:24px;font-weight:700;color:var(--tx);margin-bottom:3px;">Development Resources</h2>
+    <p style="font-size:12px;color:var(--mt);margin-bottom:16px;">Curated for academic &amp; professional growth.</p>
+    <div class="ftabs">
+      <button class="ftb${isMicro?' on':''}" onclick="setRes('micro')">MICRO-CREDENTIALS</button>
+      <button class="ftb${!isMicro?' on':''}" onclick="setRes('workshops')">WORKSHOPS</button>
+    </div>`;
+
+  if(isMicro){
+    h+=`<div class="notice"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7A5800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p style="font-size:11px;color:#7A5800;line-height:1.4;"><strong>ISU NetID login required</strong> to claim badges at microcredentials.iastate.edu. Credentials below are verified ISU offerings via CELT &amp; Accredible.</p></div>`;
+    MICRO.forEach(r=>{ h+=rcard(r,true); });
+  } else {
+    const sections=[
+      {key:'research',label:'RESEARCH WORKSHOPS'},
+      {key:'teaching',label:'TEACHING WORKSHOPS'},
+      {key:'communication',label:'COMMUNICATION WORKSHOPS'},
+      {key:'career',label:'CAREER WORKSHOPS'},
+    ];
+    sections.forEach(({key,label})=>{
+      h+=`<p class="sechd">${label}</p>`;
+      WORKSHOPS[key].forEach(r=>{ h+=rcard(r,false); });
+    });
+  }
+  $('con').innerHTML=h+'</div>';
+  $('con').scrollTop=0;
+}
+
+function setRes(v){S.res=v;renderResources();}
+
+function sw(t){
+  document.querySelectorAll('.ntb').forEach(b=>{b.classList.remove('on');const s=b.querySelector('svg');if(s)s.setAttribute('stroke','var(--mt)');});
+  const nb=$(`nb-${t}`);if(nb){nb.classList.add('on');const s=nb.querySelector('svg');if(s)s.setAttribute('stroke','var(--cr)');}
+  if(t==='resources'){renderResources();}
+  else if(t==='home'){
+    $('con').innerHTML=`<div class="p18"><p style="font-size:12px;color:var(--mt);">Monday, October 12</p><h1 style="font-family:Georgia,serif;font-size:22px;font-weight:700;color:var(--tx);margin:3px 0 16px;">Good morning, <span style="color:var(--cr);">Alex</span></h1><div style="background:var(--cr);border-radius:20px;padding:20px;margin-bottom:16px;text-align:center;"><p style="font-size:9px;letter-spacing:1.4px;color:rgba(255,255,255,0.55);margin-bottom:6px;">OVERALL PORTFOLIO</p><p style="font-family:Georgia,serif;font-size:48px;font-weight:700;color:#fff;line-height:1;">68%</p><p style="font-size:11px;color:rgba(255,255,255,0.65);margin-top:4px;">Digital Skills Portfolio · FY24</p></div><p style="font-size:9px;font-weight:700;letter-spacing:1.3px;color:var(--mt);margin-bottom:9px;">QUICK ACTIONS</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px;"><button onclick="sw('assessments')" style="background:var(--wh);border:1.5px solid var(--bd);border-radius:14px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--cr)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span style="font-size:11px;font-weight:600;color:var(--tx);">Assessments</span></button><button onclick="sw('resources')" style="background:var(--wh);border:1.5px solid var(--bd);border-radius:14px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--cr)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span style="font-size:11px;font-weight:600;color:var(--tx);">Resources</span></button></div><p style="font-size:9px;font-weight:700;letter-spacing:1.3px;color:var(--mt);margin-bottom:9px;">RECENT ACTIVITY</p><div style="background:var(--wh);border:1.5px solid var(--bd);border-radius:14px;padding:13px;margin-bottom:9px;"><p style="font-size:12px;font-weight:600;color:var(--tx);margin-bottom:2px;">Research Assessment</p><p style="font-size:11px;color:var(--mt);">Completed · Avg score: 3.8/5</p></div><div style="background:var(--wh);border:1.5px solid var(--bd);border-radius:14px;padding:13px;"><p style="font-size:12px;font-weight:600;color:var(--tx);margin-bottom:2px;">Enrolled: Public Speaking for Researchers</p><p style="font-size:11px;color:var(--mt);">Graduate College · Oct 15 · 2.5 hrs</p></div></div>`;
+  } else if(t==='assessments'){
+    $('con').innerHTML=`<div style="padding:40px 16px;text-align:center;"><p style="font-size:15px;font-weight:600;color:var(--tx);margin-bottom:6px;">Skill Assessments</p><p style="font-size:12px;color:var(--mt);margin-bottom:20px;">Switch to the full Assessment widget<br>to take quizzes.</p><button onclick="sw('resources')" style="background:var(--cr);border:none;border-radius:12px;padding:12px 20px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:system-ui;">Go to Resources →</button></div>`;
+  } else {
+    $('con').innerHTML=`<div style="padding:60px 16px;text-align:center;"><p style="font-size:14px;color:var(--mt);">${t.charAt(0).toUpperCase()+t.slice(1)}</p><p style="font-size:12px;color:var(--bd);margin-top:4px;">Coming soon</p></div>`;
+  }
+  $('con').scrollTop=0;
+}
+renderResources();
+</script>
