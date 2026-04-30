@@ -20,6 +20,14 @@ button { font-family: inherit; } input { font-family: inherit; }
 .scr-area::-webkit-scrollbar { display: none; }
 .fade-in { animation: fade .25s ease; }
 @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (max-width: 480px) {
+  html, body { background: var(--cm); overscroll-behavior: none; }
+  body { padding: 0; align-items: stretch; justify-content: stretch; }
+  .phone-shell { width: 100vw !important; height: 100vh !important; height: 100dvh !important; border-radius: 0 !important; box-shadow: none !important; }
+  .phone-island { display: none !important; }
+  .app-body { padding-top: env(safe-area-inset-top, 50px) !important; }
+  .twk-panel { width: calc(100vw - 32px) !important; max-width: 280px !important; }
+}
 </style>
 </head>
 <body>
@@ -231,7 +239,7 @@ function IOSDevice({
   title, keyboard = false,
 }) {
   return (
-    <div style={{
+    <div className="phone-shell" style={{
       width, height, borderRadius: 48, overflow: 'hidden',
       position: 'relative', background: dark ? '#000' : '#F2F2F7',
       boxShadow: '0 40px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.12)',
@@ -239,7 +247,7 @@ function IOSDevice({
       WebkitFontSmoothing: 'antialiased',
     }}>
       {/* dynamic island */}
-      <div style={{
+      <div className="phone-island" style={{
         position: 'absolute', top: 11, left: '50%', transform: 'translateX(-50%)',
         width: 126, height: 37, borderRadius: 24, background: '#000', zIndex: 50,
       }} />
@@ -2519,7 +2527,7 @@ function App() {
             setSignedIn(true);
           }}/>
         ) : (
-        <div data-screen-label={tab} style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--cm)', paddingTop: 50 }}>
+        <div className="app-body" data-screen-label={tab} style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--cm)', paddingTop: 50 }}>
           {headerBar}
           <div className="scr-area" key={tab + assessmentView.view + (assessmentView.catId || '')}>
             <div className="fade-in">{content}</div>
