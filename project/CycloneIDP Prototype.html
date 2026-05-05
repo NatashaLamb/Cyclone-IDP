@@ -1671,7 +1671,7 @@ function ProfileScreen({ state, scoresPct, overallPct, addingGoal, setAddingGoal
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
         <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--cr)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 26, fontWeight: 700, fontFamily: 'Newsreader, Georgia, serif' }}>{(state.userName || 'C').charAt(0).toUpperCase()}</div>
         <div>
-          <h2 style={{ fontFamily: 'Newsreader, Georgia, serif', fontSize: 22, fontWeight: 700, color: 'var(--tx)', lineHeight: 1.1 }}>{state.userName || 'Cyclone'} Chen</h2>
+          <h2 style={{ fontFamily: 'Newsreader, Georgia, serif', fontSize: 22, fontWeight: 700, color: 'var(--tx)', lineHeight: 1.1 }}>{state.userName || 'Cyclone'}{state.userLastName ? ' ' + state.userLastName : ''}</h2>
           <p style={{ fontSize: 12, color: 'var(--mt)', marginTop: 3 }}>PhD Candidate · Year 3</p>
           <p style={{ fontSize: 11, color: 'var(--mt)' }}>Mechanical Engineering</p>
         </div>
@@ -2045,7 +2045,7 @@ function OnboardingFlow({ onComplete, defaultName }) {
     if (!validateISU(email)) { setError('Please use your @iastate.edu email'); return; }
     if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
     setError('');
-    onComplete({ email, name: name.trim().split(' ')[0] });
+    onComplete({ email, name: name.trim() });
   };
 
   return (
@@ -2415,6 +2415,7 @@ const TWEAKS_DEFAULTS = /*EDITMODE-BEGIN*/{
   "primaryColor": "#C8102E",
   "accentColor": "#F1BE48",
   "userName": "Alex",
+  "userLastName": "",
   "showStatusBar": true,
   "headlineFont": "Newsreader"
 }/*EDITMODE-END*/;
@@ -2451,7 +2452,7 @@ function App() {
   const removeGoal = (id) => setGoals((prev) => prev.filter((g) => g.id !== id));
   const bumpGoal = (id, n) => setGoals((prev) => prev.map((g) => g.id === id ? { ...g, progress: Math.min(100, g.progress + n) } : g));
 
-  const state = { completed, enrolled, goals, toggleEnroll, addGoal, removeGoal, bumpGoal, resourcesTab, userName: tweaks.userName, openCalendar: () => setCalendarOpen(true), openDetail: (item, kind) => setDetailItem({ item, kind }) };
+  const state = { completed, enrolled, goals, toggleEnroll, addGoal, removeGoal, bumpGoal, resourcesTab, userName: tweaks.userName, userLastName: tweaks.userLastName, openCalendar: () => setCalendarOpen(true), openDetail: (item, kind) => setDetailItem({ item, kind }) };
 
   const scoresPct = useMemo(() => {
     const out = {};
@@ -2525,7 +2526,11 @@ function App() {
       <IOSDevice width={390} height={844}>
         {!signedIn ? (
           <OnboardingFlow onComplete={({ email, name }) => {
-            if (name) setTweak('userName', name);
+            if (name) {
+              const parts = name.trim().split(/\s+/);
+              setTweak('userName', parts[0]);
+              setTweak('userLastName', parts.slice(1).join(' '));
+            }
             setSignedIn(true);
           }}/>
         ) : (
