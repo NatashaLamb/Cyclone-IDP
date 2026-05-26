@@ -2104,7 +2104,7 @@ function OnboardingFlow({ onComplete, defaultName }) {
     if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
     setError('');
     const inferredName = email.split('@')[0].split(/[._-]/)[0];
-    onComplete({ email, name: inferredName.charAt(0).toUpperCase() + inferredName.slice(1) });
+    onComplete({ email, name: inferredName.charAt(0).toUpperCase() + inferredName.slice(1), isExisting: true });
   };
 
   const submitSignup = (e) => {
@@ -2576,6 +2576,26 @@ Object.assign(window, { CalendarModal });
 
 const { useState, useEffect, useMemo } = React;
 
+// Pre-populated demo state for returning users (Sign In flow)
+// Scores computed as: Math.round((sum / questions / 5) * 100)
+// research: [3,5,3,5,3,5,5,1] → avg 3.75 → 75%
+// teaching: [2,4,4,1,1,5,5,4] → avg 3.25 → 65%
+// communication: [3,4,4,3,1,4,1,5] → avg 3.125 → 63%
+// career: [3,2,2,5,2,5,2,2] → avg 2.875 → 58%
+const DEMO_COMPLETED = {
+  research:      [3, 5, 3, 5, 3, 5, 5, 1],
+  teaching:      [2, 4, 4, 1, 1, 5, 5, 4],
+  communication: [3, 4, 4, 3, 1, 4, 1, 5],
+  career:        [3, 2, 2, 5, 2, 5, 2, 2],
+};
+const DEMO_HISTORY = {
+  research:      [{ pct: 68, date: 'Sep 15, 2026' }],
+  teaching:      [{ pct: 58, date: 'Sep 15, 2026' }],
+  communication: [{ pct: 55, date: 'Sep 15, 2026' }],
+  career:        [{ pct: 50, date: 'Sep 15, 2026' }],
+};
+const DEMO_ENROLLED = ['w1', 'w3', 'm2'];
+
 const TWEAKS_DEFAULTS = /*EDITMODE-BEGIN*/{
   "primaryColor": "#C8102E",
   "accentColor": "#F1BE48",
@@ -2712,7 +2732,7 @@ function App() {
     <>
       <IOSDevice width={390} height={844}>
         {!signedIn ? (
-          <OnboardingFlow onComplete={({ email, name, level, year, major }) => {
+          <OnboardingFlow onComplete={({ email, name, level, year, major, isExisting }) => {
             if (name) {
               const parts = name.trim().split(/\s+/);
               setTweak('userName', parts[0]);
@@ -2721,6 +2741,11 @@ function App() {
             if (level) setTweak('userLevel', level);
             if (year) setTweak('userYear', year);
             if (major) setTweak('userMajor', major);
+            if (isExisting) {
+              setCompleted(DEMO_COMPLETED);
+              setHistory(DEMO_HISTORY);
+              setEnrolled(DEMO_ENROLLED);
+            }
             setSignedIn(true);
           }}/>
         ) : (
