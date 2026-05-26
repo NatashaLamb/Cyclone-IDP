@@ -1397,7 +1397,7 @@ function AssessmentsList({ state, openAssessment }) {
               <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--tx)', marginBottom: 2, fontFamily: 'Newsreader, Georgia, serif' }}>{cat.title}</div>
               <div style={{ fontSize: 11.5, color: 'var(--mt)', marginBottom: 6, lineHeight: 1.3 }}>{cat.desc}</div>
               {done ? (
-                <span style={{ fontSize: 9, fontWeight: 700, background: cat.light, color: cat.color, borderRadius: 20, padding: '3px 9px', letterSpacing: 0.5 }}>COMPLETED · {avg} / 5</span>
+                <span style={{ fontSize: 9, fontWeight: 700, background: '#EBF5EC', color: '#2A6A30', borderRadius: 20, padding: '3px 9px', letterSpacing: 0.5 }}>Completed ✓ · {avg} / 5</span>
               ) : (
                 <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--mt)', letterSpacing: 0.6 }}>{cat.qs.length} QUESTIONS · ~6 MIN</span>
               )}
@@ -1467,8 +1467,36 @@ function AssessmentQuiz({ catId, onBack, onComplete }) {
   );
 }
 
+// ---------- RETAKE MODAL ----------
+function RetakeModal({ catId, onClose, onRetake, onViewResults }) {
+  const cat = CATEGORIES[catId];
+  return (
+    <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(28,18,8,0.45)', zIndex: 1000, display: 'flex', alignItems: 'flex-end', borderRadius: 'inherit' }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: '24px 24px 0 0', padding: '12px 20px 32px', width: '100%', boxSizing: 'border-box', fontFamily: 'Public Sans, system-ui' }}>
+        <div style={{ width: 36, height: 4, borderRadius: 2, background: 'var(--bd)', margin: '0 auto 18px' }}/>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 6 }}>
+          <div style={{ width: 42, height: 42, borderRadius: 12, background: cat.light, color: cat.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            {ICONS[catId]}
+          </div>
+          <div>
+            <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.2, color: cat.color, marginBottom: 2 }}>ALREADY COMPLETED</p>
+            <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--tx)', fontFamily: 'Newsreader, Georgia, serif' }}>{cat.title}</p>
+          </div>
+        </div>
+        <p style={{ fontSize: 12.5, color: 'var(--mt)', lineHeight: 1.5, marginBottom: 20 }}>You've already taken this assessment. Would you like to retake it to update your score, or view your previous results?</p>
+        <button onClick={() => onRetake(catId)} style={{ width: '100%', background: 'var(--cr)', color: '#fff', border: 'none', borderRadius: 13, padding: 14, fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', marginBottom: 10 }}>
+          Retake Quiz
+        </button>
+        <button onClick={() => onViewResults(catId)} style={{ width: '100%', background: 'transparent', color: 'var(--cr)', border: '1.5px solid var(--cr)', borderRadius: 13, padding: 13, fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+          View Results
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ---------- ASSESSMENT RESULTS ----------
-function AssessmentResults({ catId, onBack, state }) {
+function AssessmentResults({ catId, onBack, state, history, onRetake }) {
   const cat = CATEGORIES[catId];
   const ans = state.completed[catId] || [];
   const tot = Array(5).fill(0), cnt = Array(5).fill(0);
@@ -1525,8 +1553,23 @@ function AssessmentResults({ catId, onBack, state }) {
       {/* Recommendations */}
       <Recommendations cat={cat} catId={catId} state={state} weakest={ranked.slice(-2).reverse()}/>
 
-      <button onClick={onBack} style={{ width: '100%', background: cat.color, color: '#fff', border: 'none', borderRadius: 13, padding: 13, fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+      {history && history.length > 0 && (
+        <div style={{ background: 'var(--wh)', border: '1.5px solid var(--bd)', borderRadius: 18, padding: 14, marginBottom: 12 }}>
+          <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1.3, color: 'var(--mt)', marginBottom: 10 }}>PREVIOUS ATTEMPTS</p>
+          {history.map((entry, i) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: i < history.length - 1 ? '1px solid var(--bd)' : 'none' }}>
+              <span style={{ fontSize: 12, color: 'var(--mt)' }}>{entry.date}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--tx)', fontFamily: 'Newsreader, Georgia, serif' }}>{entry.pct}% overall</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <button onClick={onBack} style={{ width: '100%', background: cat.color, color: '#fff', border: 'none', borderRadius: 13, padding: 13, fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', marginBottom: 10 }}>
         Continue →
+      </button>
+      <button onClick={() => onRetake(catId)} style={{ width: '100%', background: 'transparent', color: 'var(--cr)', border: '1.5px solid var(--cr)', borderRadius: 13, padding: 13, fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+        Retake Quiz
       </button>
     </div>
   );
@@ -1586,7 +1629,7 @@ function Recommendations({ cat, catId, state, weakest }) {
   );
 }
 
-Object.assign(window, { NavIcon, Donut, Radar, MiniBar, HomeScreen, AssessmentsList, AssessmentQuiz, AssessmentResults });
+Object.assign(window, { NavIcon, Donut, Radar, MiniBar, HomeScreen, AssessmentsList, AssessmentQuiz, AssessmentResults, RetakeModal });
 
 </script>
 
@@ -2544,6 +2587,8 @@ function App() {
   const [tab, setTab] = useState('home');
   const [assessmentView, setAssessmentView] = useState({ catId: null, view: 'list' });
   const [completed, setCompleted] = useState({});
+  const [history, setHistory] = useState({});
+  const [retakeModal, setRetakeModal] = useState(null);
   const [enrolled, setEnrolled] = useState(['m1', 'w2']);
   const [goals, setGoals] = useState(GOALS_DEFAULT);
   const [resourcesTab, setResourcesTab] = useState('workshops');
@@ -2597,19 +2642,32 @@ function App() {
     if (newTab === 'assessments') setAssessmentView({ catId: null, view: 'list' });
   };
 
-  const openAssessment = (id) => setAssessmentView({ catId: id, view: 'quiz' });
+  const openAssessment = (id) => {
+    if (completed[id]) { setRetakeModal(id); } else { setAssessmentView({ catId: id, view: 'quiz' }); }
+  };
   const completeAssessment = (id, ans) => {
+    if (completed[id]) {
+      const cat = CATEGORIES[id];
+      const tot = Array(5).fill(0), cnt = Array(5).fill(0);
+      completed[id].forEach((sc, i) => { const ax = cat.qs[i][1]; tot[ax] += sc; cnt[ax]++; });
+      const sc = tot.map((t, i) => cnt[i] ? +(t / cnt[i]).toFixed(1) : 0);
+      const pct = Math.round((sc.reduce((a, b) => a + b, 0) / sc.length) / 5 * 100);
+      const date = new Date().toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' });
+      setHistory(prev => ({ ...prev, [id]: [{ pct, date }, ...(prev[id] || [])] }));
+    }
     setCompleted((prev) => ({ ...prev, [id]: ans }));
     setAssessmentView({ catId: id, view: 'results' });
   };
   const backToList = () => setAssessmentView({ catId: null, view: 'list' });
+  const startRetake = (id) => { setRetakeModal(null); setAssessmentView({ catId: id, view: 'quiz' }); };
+  const viewResults = (id) => { setRetakeModal(null); setAssessmentView({ catId: id, view: 'results' }); };
 
   let content;
   if (tab === 'home') content = <HomeScreen state={state} go={go} scoresPct={scoresPct} overallPct={overallPct} />;else
   if (tab === 'assessments') {
     if (assessmentView.view === 'list') content = <AssessmentsList state={state} openAssessment={openAssessment} />;else
     if (assessmentView.view === 'quiz') content = <AssessmentQuiz catId={assessmentView.catId} onBack={backToList} onComplete={completeAssessment} />;else
-    content = <AssessmentResults catId={assessmentView.catId} onBack={backToList} state={state} />;
+    content = <AssessmentResults catId={assessmentView.catId} onBack={backToList} state={state} history={history[assessmentView.catId] || []} onRetake={startRetake} />;
   } else
   if (tab === 'resources') content = <ResourcesScreen state={{ ...state, resourcesTab }} />;else
   if (tab === 'profile') content = <ProfileScreen state={state} scoresPct={scoresPct} overallPct={overallPct} addingGoal={addingGoal} setAddingGoal={setAddingGoal} />;
@@ -2665,6 +2723,7 @@ function App() {
           {calendarOpen && <CalendarModal workshops={WORKSHOPS} enrolled={enrolled} toggleEnroll={toggleEnroll} onClose={() => setCalendarOpen(false)} openDetail={(item) => setDetailItem({ item, kind: 'workshop' })}/>}
           {detailItem && <ResourceDetailModal item={detailItem.item} kind={detailItem.kind} enrolled={enrolled} toggleEnroll={toggleEnroll} onClose={() => setDetailItem(null)}/>}
           {toast && <RegistrationToast title={toast.title} kind={toast.kind} onClose={() => setToast(null)}/>}
+          {retakeModal && <RetakeModal catId={retakeModal} onClose={() => setRetakeModal(null)} onRetake={startRetake} onViewResults={viewResults}/>}
         </div>
         )}
       </IOSDevice>
