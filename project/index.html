@@ -25,9 +25,17 @@ button { font-family: inherit; } input { font-family: inherit; }
   80%  { opacity: 1; }
   100% { transform: translateY(700px) rotate(720deg); opacity: 0; }
 }
-@keyframes toast-up {
-  from { transform: translateY(80px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+@keyframes toast-bounce-in {
+  0%   { transform: translateY(110px); opacity: 0; }
+  55%  { opacity: 1; }
+  70%  { transform: translateY(-7px); }
+  85%  { transform: translateY(3px); }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes toast-slide-out {
+  from { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(110px); opacity: 0; }
+}
 }
 
 @media (max-width: 480px) {
@@ -1778,13 +1786,18 @@ function ConfettiOverlay({ goalTitle, onDone }) {
 }
 
 // ---------- PROGRESS TOAST ----------
-function ProgressToast({ msg, onUndo, onClose }) {
+function ProgressToast({ undone, dismissing, onUndo }) {
+  const anim = dismissing
+    ? 'toast-slide-out .28s ease forwards'
+    : 'toast-bounce-in .52s cubic-bezier(.34,1.56,.64,1)';
   return (
-    <div style={{ position: 'absolute', bottom: 72, left: 14, right: 14, zIndex: 1500, animation: 'toast-up .3s cubic-bezier(.2,.9,.3,1.1)' }}>
-      <div style={{ background: '#1C1208', borderRadius: 14, padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, boxShadow: '0 8px 28px rgba(28,18,8,0.3)' }}>
-        <span style={{ fontSize: 13, fontWeight: 600, color: '#fff', flex: 1 }}>{msg}</span>
-        {onUndo && (
-          <button onClick={onUndo} style={{ background: 'none', border: '1.5px solid var(--cr)', borderRadius: 8, padding: '5px 12px', fontSize: 12, fontWeight: 700, color: 'var(--cr)', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>Undo</button>
+    <div style={{ position: 'absolute', bottom: 74, left: 14, right: 14, zIndex: 1600, animation: anim, pointerEvents: 'auto' }}>
+      <div style={{ background: '#1C1208', borderRadius: 18, padding: '13px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, boxShadow: '0 8px 32px rgba(28,18,8,0.38), 0 2px 8px rgba(28,18,8,0.18)' }}>
+        <span style={{ fontSize: 13.5, fontWeight: 600, color: '#fff', flex: 1 }}>
+          {undone ? 'Progress removed' : 'Progress logged ✓'}
+        </span>
+        {!undone && (
+          <button onClick={onUndo} style={{ background: 'none', border: 'none', fontSize: 13.5, fontWeight: 700, color: 'var(--cr)', cursor: 'pointer', fontFamily: 'inherit', padding: '0 2px', flexShrink: 0 }}>Undo</button>
         )}
       </div>
     </div>
@@ -1794,22 +1807,6 @@ function ProgressToast({ msg, onUndo, onClose }) {
 function ProfileScreen({ state, scoresPct, overallPct, addingGoal, setAddingGoal }) {
   const enrolledMicros = MICRO_CREDS.filter(m => state.enrolled.includes(m.id));
   const completedAssessments = Object.keys(state.completed).length;
-  const [progressToast, setProgressToast] = useState2(null);
-  const logProgress = (goalId) => {
-    state.bumpGoal(goalId, 10);
-    if (progressToast?.timer) clearTimeout(progressToast.timer);
-    const timer = setTimeout(() => setProgressToast(null), 5000);
-    setProgressToast({ goalId, undone: false, timer });
-  };
-
-  const undoProgress = () => {
-    if (!progressToast) return;
-    clearTimeout(progressToast.timer);
-    state.bumpGoal(progressToast.goalId, -10);
-    const timer = setTimeout(() => setProgressToast(null), 2000);
-    setProgressToast({ ...progressToast, undone: true, timer });
-  };
-
   const markComplete = (g) => {
     state.markGoalComplete(g.id);
     state.onCelebrate({ goalId: g.id, goalTitle: g.title });
@@ -1883,7 +1880,7 @@ function ProfileScreen({ state, scoresPct, overallPct, addingGoal, setAddingGoal
             {!g.completed && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <button onClick={() => logProgress(g.id)} style={{ flex: 1, background: cat.color, color: '#fff', border: 'none', borderRadius: 9, padding: '8px', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>+ Log Progress</button>
+                  <button onClick={() => state.logProgress(g.id)} style={{ flex: 1, background: cat.color, color: '#fff', border: 'none', borderRadius: 9, padding: '8px', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>+ Log Progress</button>
                   <button onClick={() => state.removeGoal(g.id)} style={{ background: 'var(--wh)', color: 'var(--mt)', border: '1.5px solid var(--bd)', borderRadius: 9, padding: '8px 12px', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Archive</button>
                 </div>
                 <button onClick={() => markComplete(g)} style={{ width: '100%', background: 'transparent', color: '#2A6A30', border: '1.5px solid #2A6A30', borderRadius: 9, padding: '7px', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Mark as Completed</button>
@@ -1912,15 +1909,6 @@ function ProfileScreen({ state, scoresPct, overallPct, addingGoal, setAddingGoal
             );
           })}
         </>
-      )}
-
-      {/* Progress toast */}
-      {progressToast && (
-        <ProgressToast
-          msg={progressToast.undone ? 'Progress removed' : 'Progress logged ✓'}
-          onUndo={progressToast.undone ? null : undoProgress}
-          onClose={() => setProgressToast(null)}
-        />
       )}
 
     </div>
@@ -2778,6 +2766,7 @@ function App() {
   const [detailItem, setDetailItem] = useState(null);
   const [toast, setToast] = useState(null);
   const [celebration, setCelebration] = useState(null);
+  const [progressToast, setProgressToast] = useState(null);
   const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
@@ -2799,7 +2788,27 @@ function App() {
   const bumpGoal = (id, n) => setGoals((prev) => prev.map((g) => g.id === id ? { ...g, progress: Math.min(100, Math.max(0, g.progress + n)) } : g));
   const markGoalComplete = (id) => setGoals((prev) => prev.map((g) => g.id === id ? { ...g, completed: true, progress: 100 } : g));
 
-  const state = { completed, enrolled, goals, toggleEnroll, addGoal, removeGoal, bumpGoal, markGoalComplete, onCelebrate: setCelebration, resourcesTab, userName: tweaks.userName, userLastName: tweaks.userLastName, userLevel: tweaks.userLevel, userYear: tweaks.userYear, userMajor: tweaks.userMajor, openCalendar: () => setCalendarOpen(true), openDetail: (item, kind) => setDetailItem({ item, kind }) };
+  const dismissProgressToast = (delay = 0) => {
+    setProgressToast(prev => prev ? { ...prev, dismissing: true } : null);
+    setTimeout(() => setProgressToast(null), delay + 300);
+  };
+  const logProgress = (goalId) => {
+    bumpGoal(goalId, 10);
+    setProgressToast(prev => { if (prev?.timer) clearTimeout(prev.timer); return null; });
+    const timer = setTimeout(() => dismissProgressToast(), 5000);
+    setProgressToast({ goalId, undone: false, dismissing: false, timer });
+  };
+  const undoProgress = () => {
+    setProgressToast(prev => {
+      if (!prev) return null;
+      clearTimeout(prev.timer);
+      bumpGoal(prev.goalId, -10);
+      const timer = setTimeout(() => dismissProgressToast(0), 2000);
+      return { ...prev, undone: true, dismissing: false, timer };
+    });
+  };
+
+  const state = { completed, enrolled, goals, toggleEnroll, addGoal, removeGoal, bumpGoal, markGoalComplete, logProgress, onCelebrate: setCelebration, resourcesTab, userName: tweaks.userName, userLastName: tweaks.userLastName, userLevel: tweaks.userLevel, userYear: tweaks.userYear, userMajor: tweaks.userMajor, openCalendar: () => setCalendarOpen(true), openDetail: (item, kind) => setDetailItem({ item, kind }) };
 
   const scoresPct = useMemo(() => {
     const out = {};
@@ -2917,6 +2926,7 @@ function App() {
           {toast && <RegistrationToast title={toast.title} kind={toast.kind} onClose={() => setToast(null)}/>}
           {retakeModal && <RetakeModal catId={retakeModal} onClose={() => setRetakeModal(null)} onRetake={startRetake} onViewResults={viewResults}/>}
           {celebration && <ConfettiOverlay goalTitle={celebration.goalTitle} onDone={() => setCelebration(null)}/>}
+          {progressToast && <ProgressToast undone={progressToast.undone} dismissing={progressToast.dismissing} onUndo={undoProgress}/>}
         </div>
         )}
       </IOSDevice>
