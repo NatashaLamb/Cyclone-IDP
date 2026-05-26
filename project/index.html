@@ -2075,9 +2075,9 @@ function OnboardingFlow({ onComplete, defaultName }) {
       {/* Decorative background */}
       <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 60% at 50% -10%, #FCE8EC 0%, transparent 60%), radial-gradient(ellipse 90% 70% at 50% 110%, #F5F3E6 0%, transparent 60%)', pointerEvents: 'none' }}/>
 
-      {view === 'welcome' && (
-        <WelcomeView setView={setView}/>
-      )}
+      {view === 'welcome' && <WelcomeView setView={setView}/>}
+      {view === 'what-is-idp' && <WhatIsIDPView setView={setView}/>}
+      {view === 'what-to-expect' && <WhatToExpectView setView={setView}/>}
 
       {(view === 'login' || view === 'signup') && (
         <AuthView
@@ -2128,9 +2128,9 @@ function WelcomeView({ setView }) {
           Track your skills, build your goals, and grow<br/>ALL IN ONE PLACE.
         </p>
 
-        <button onClick={() => setView('signup')}
+        <button onClick={() => setView('what-is-idp')}
           style={{ width: '100%', background: 'var(--cr)', color: '#fff', border: 'none', borderRadius: 12, padding: '14px', fontSize: 14.5, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: 0.3, marginBottom: 10 }}>
-          Create account
+          Get Started
         </button>
         <button onClick={() => setView('login')}
           style={{ width: '100%', background: 'var(--wh)', color: 'var(--cr)', border: '1.5px solid var(--cr)', borderRadius: 12, padding: '14px', fontSize: 14.5, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: 0.3 }}>
@@ -2142,6 +2142,69 @@ function WelcomeView({ setView }) {
           <span style={{ color: 'var(--cr)', fontWeight: 600 }}>Terms</span> &{' '}
           <span style={{ color: 'var(--cr)', fontWeight: 600 }}>Privacy Policy</span>
         </p>
+      </div>
+    </div>
+  );
+}
+
+// ---------- Onboarding Screen 1: What is IDP? ----------
+function WhatIsIDPView({ setView }) {
+  return (
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
+      <div style={{ height: 50, flexShrink: 0 }}/>
+      <div style={{ padding: '4px 20px 0', display: 'flex', justifyContent: 'flex-end' }}>
+        <button onClick={() => setView('signup')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: 'var(--mt)', fontFamily: 'inherit', padding: '4px 0' }}>Skip</button>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 0' }}>
+        <img src={window.__resources.mascot} alt="Cy the mascot" style={{ width: 150, height: 'auto', filter: 'drop-shadow(0 8px 20px rgba(28,18,8,0.15))' }}/>
+      </div>
+      <div style={{ flex: 1, padding: '20px 28px 36px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div>
+          <h2 style={{ fontFamily: 'Newsreader, Georgia, serif', fontSize: 30, fontWeight: 700, color: 'var(--tx)', marginBottom: 14, lineHeight: 1.1 }}>What is IDP?</h2>
+          <p style={{ fontSize: 14, color: 'var(--mt)', lineHeight: 1.7 }}>
+            The <span style={{ color: 'var(--tx)', fontWeight: 700 }}>Individual Development Plan (IDP)</span> is your personal roadmap through graduate school. It helps you identify your strengths, set academic and career goals, and connect with resources at Iowa State University.
+          </p>
+        </div>
+        <button onClick={() => setView('what-to-expect')}
+          style={{ width: '100%', background: 'var(--cr)', color: '#fff', border: 'none', borderRadius: 12, padding: '14px', fontSize: 14.5, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: 0.3 }}>
+          Next →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ---------- Onboarding Screen 2: What to Expect ----------
+function WhatToExpectView({ setView }) {
+  const cards = [
+    { emoji: '📊', label: 'Assess', desc: 'Take skill quizzes to discover your strengths' },
+    { emoji: '🎓', label: 'Learn', desc: 'Browse workshops and micro-credentials' },
+    { emoji: '🌱', label: 'Grow', desc: 'Track your progress over time' },
+  ];
+  return (
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
+      <div style={{ height: 50, flexShrink: 0 }}/>
+      <div style={{ padding: '4px 20px 0', display: 'flex', justifyContent: 'flex-end' }}>
+        <button onClick={() => setView('signup')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: 'var(--mt)', fontFamily: 'inherit', padding: '4px 0' }}>Skip</button>
+      </div>
+      <div style={{ flex: 1, padding: '20px 24px 36px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div>
+          <h2 style={{ fontFamily: 'Newsreader, Georgia, serif', fontSize: 28, fontWeight: 700, color: 'var(--tx)', marginBottom: 8, lineHeight: 1.1 }}>Here's what you can do</h2>
+          <p style={{ fontSize: 13, color: 'var(--mt)', marginBottom: 24, lineHeight: 1.5 }}>Everything you need for your graduate journey.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+            {cards.map((c, i) => (
+              <div key={i} style={{ background: 'var(--wh)', border: '1.5px solid var(--bd)', borderRadius: 16, padding: '16px 10px 14px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 7 }}>
+                <span style={{ fontSize: 26, lineHeight: 1 }}>{c.emoji}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--tx)', fontFamily: 'Newsreader, Georgia, serif' }}>{c.label}</span>
+                <span style={{ fontSize: 10.5, color: 'var(--mt)', lineHeight: 1.45 }}>{c.desc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <button onClick={() => setView('signup')}
+          style={{ width: '100%', background: 'var(--cr)', color: '#fff', border: 'none', borderRadius: 12, padding: '14px', fontSize: 14.5, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: 0.3, marginTop: 28 }}>
+          Let's go!
+        </button>
       </div>
     </div>
   );
