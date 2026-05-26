@@ -2065,7 +2065,6 @@ function OnboardingFlow({ onComplete, defaultName }) {
     if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
     if (!level) { setError('Please select your level of study'); return; }
     if (!year) { setError('Please select your year of study'); return; }
-    if (!major.trim()) { setError('Please enter your degree or major'); return; }
     setError('');
     onComplete({ email, name: name.trim(), level, year, major: major.trim() });
   };
