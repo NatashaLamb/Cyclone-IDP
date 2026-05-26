@@ -1420,26 +1420,32 @@ function AssessmentsList({ state, openAssessment }) {
 function AssessmentQuiz({ catId, onBack, onComplete }) {
   const cat = CATEGORIES[catId];
   const [qIdx, setQIdx] = useState(0);
-  const [selOpt, setSelOpt] = useState(null);
-  const [answers, setAnswers] = useState([]);
+  // selections[i] = chosen option index (0-3) for question i; undefined if not yet answered
+  const [selections, setSelections] = useState([]);
 
   const [type, , qtext, opts] = cat.qs[qIdx];
   const tc = TYPE_COLORS[type] || { bg: '#eee', tx: '#333' };
   const pct = Math.round(qIdx / cat.qs.length * 100);
+  const isFirst = qIdx === 0;
   const isLast = qIdx === cat.qs.length - 1;
+  const selOpt = selections[qIdx] !== undefined ? selections[qIdx] : null;
   const hasSel = selOpt !== null;
 
+  const select = (i) => {
+    setSelections(prev => { const s = [...prev]; s[qIdx] = i; return s; });
+  };
+
   const next = () => {
-    if (selOpt === null) return;
-    const newAns = [...answers, opts[selOpt][1]];
+    if (!hasSel) return;
     if (isLast) {
-      onComplete(catId, newAns);
+      const answers = cat.qs.map((q, i) => q[3][selections[i]][1]);
+      onComplete(catId, answers);
     } else {
-      setAnswers(newAns);
       setQIdx(qIdx + 1);
-      setSelOpt(null);
     }
   };
+
+  const prev = () => { if (!isFirst) setQIdx(qIdx - 1); };
 
   return (
     <div style={{ padding: '14px 18px 28px', fontFamily: 'Public Sans, system-ui' }}>
@@ -1459,16 +1465,22 @@ function AssessmentQuiz({ catId, onBack, onComplete }) {
       {['A', 'B', 'C', 'D'].map((L, i) => {
         const sel = selOpt === i;
         return (
-          <button key={i} onClick={() => setSelOpt(i)} style={{ background: sel ? cat.light : 'var(--wh)', border: sel ? `2px solid ${cat.color}` : '1.5px solid var(--bd)', borderRadius: 13, padding: sel ? '9px 11px' : '10px 12px', marginBottom: 8, cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: 10, width: '100%', textAlign: 'left', fontFamily: 'inherit', transition: 'all .15s' }}>
+          <button key={i} onClick={() => select(i)} style={{ background: sel ? cat.light : 'var(--wh)', border: sel ? `2px solid ${cat.color}` : '1.5px solid var(--bd)', borderRadius: 13, padding: sel ? '9px 11px' : '10px 12px', marginBottom: 8, cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: 10, width: '100%', textAlign: 'left', fontFamily: 'inherit', transition: 'all .15s' }}>
             <div style={{ width: 22, height: 22, borderRadius: '50%', background: sel ? cat.color : 'var(--bd)', color: sel ? '#fff' : 'var(--mt)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{L}</div>
             <span style={{ fontSize: 13, lineHeight: 1.4, color: 'var(--tx)' }}>{opts[i][0]}</span>
           </button>
         );
       })}
-      <button onClick={next} disabled={!hasSel}
-        style={{ width: '100%', border: 'none', borderRadius: 13, padding: 14, fontSize: 14, fontWeight: 700, cursor: hasSel ? 'pointer' : 'default', marginTop: 12, fontFamily: 'inherit', background: hasSel ? cat.color : 'var(--bd)', color: hasSel ? '#fff' : 'var(--mt)' }}>
-        {isLast ? 'See My Results →' : 'Next Question →'}
-      </button>
+      <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+        <button onClick={prev} disabled={isFirst}
+          style={{ flex: 1, background: 'transparent', border: isFirst ? '1.5px solid var(--bd)' : '1.5px solid var(--cr)', borderRadius: 13, padding: 14, fontSize: 14, fontWeight: 700, cursor: isFirst ? 'default' : 'pointer', fontFamily: 'inherit', color: isFirst ? 'var(--mt)' : 'var(--cr)', transition: 'all .15s' }}>
+          ← Previous
+        </button>
+        <button onClick={next} disabled={!hasSel}
+          style={{ flex: 1, border: 'none', borderRadius: 13, padding: 14, fontSize: 14, fontWeight: 700, cursor: hasSel ? 'pointer' : 'default', fontFamily: 'inherit', background: hasSel ? cat.color : 'var(--bd)', color: hasSel ? '#fff' : 'var(--mt)', transition: 'all .15s' }}>
+          {isLast ? 'See Results →' : 'Next →'}
+        </button>
+      </div>
     </div>
   );
 }
