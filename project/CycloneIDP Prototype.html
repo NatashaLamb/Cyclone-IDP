@@ -20,7 +20,16 @@ button { font-family: inherit; } input { font-family: inherit; }
 .scr-area { flex: 1; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; background: var(--cm); }
 .scr-area::-webkit-scrollbar { display: none; }
 .fade-in { animation: fade .25s ease; }
-@keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes confetti-fall {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateY(700px) rotate(720deg); opacity: 0; }
+}
+@keyframes toast-up {
+  from { transform: translateY(80px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
 @media (max-width: 480px) {
   html, body { background: var(--cm); overscroll-behavior: none; }
   body { padding: 0; align-items: stretch; justify-content: stretch; min-height: 100dvh; }
@@ -1740,12 +1749,77 @@ function ResourcesScreen({ state }) {
 }
 
 // ---------- PROFILE ----------
+// ---------- CONFETTI OVERLAY ----------
+function ConfettiOverlay({ goalTitle, onDone }) {
+  const CONF_COLORS = ['#C8102E','#F1BE48','#2A6A30','#3B4A8A','#9B945F','#E87722','#524727','#FCE8EC'];
+  const particles = Array.from({ length: 72 }, (_, i) => ({
+    id: i,
+    color: CONF_COLORS[i % CONF_COLORS.length],
+    left: `${(i * 13.7 + 3) % 100}%`,
+    delay: `${(i * 79) % 600}ms`,
+    dur: `${900 + (i * 137) % 1400}ms`,
+    w: 5 + (i * 7) % 9,
+    h: 4 + (i * 5) % 6,
+    rot: (i * 53) % 360,
+  }));
+  return (
+    <div style={{ position: 'absolute', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(28,18,8,0.55)' }}>
+      {particles.map(p => (
+        <div key={p.id} style={{ position: 'absolute', top: -12, left: p.left, width: p.w, height: p.h, background: p.color, borderRadius: 2, animation: `confetti-fall ${p.dur} ${p.delay} ease-in both`, transform: `rotate(${p.rot}deg)`, pointerEvents: 'none' }}/>
+      ))}
+      <div style={{ background: '#fff', borderRadius: 22, padding: '32px 26px 26px', textAlign: 'center', zIndex: 1, width: 270, boxShadow: '0 20px 50px rgba(28,18,8,0.25)' }}>
+        <div style={{ fontSize: 44, marginBottom: 8 }}>🎉</div>
+        <p style={{ fontFamily: 'Newsreader, Georgia, serif', fontSize: 22, fontWeight: 700, color: 'var(--tx)', marginBottom: 10 }}>Congratulations!</p>
+        <p style={{ fontSize: 12.5, color: 'var(--mt)', lineHeight: 1.55, marginBottom: 22 }}>You completed:<br/><strong style={{ color: 'var(--tx)', fontSize: 13 }}>{goalTitle}</strong></p>
+        <button onClick={onDone} style={{ background: 'var(--cr)', color: '#fff', border: 'none', borderRadius: 12, padding: '12px 36px', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Done</button>
+      </div>
+    </div>
+  );
+}
+
+// ---------- PROGRESS TOAST ----------
+function ProgressToast({ msg, onUndo, onClose }) {
+  return (
+    <div style={{ position: 'absolute', bottom: 72, left: 14, right: 14, zIndex: 1500, animation: 'toast-up .3s cubic-bezier(.2,.9,.3,1.1)' }}>
+      <div style={{ background: '#1C1208', borderRadius: 14, padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, boxShadow: '0 8px 28px rgba(28,18,8,0.3)' }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: '#fff', flex: 1 }}>{msg}</span>
+        {onUndo && (
+          <button onClick={onUndo} style={{ background: 'none', border: '1.5px solid var(--cr)', borderRadius: 8, padding: '5px 12px', fontSize: 12, fontWeight: 700, color: 'var(--cr)', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>Undo</button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function ProfileScreen({ state, scoresPct, overallPct, addingGoal, setAddingGoal }) {
   const enrolledMicros = MICRO_CREDS.filter(m => state.enrolled.includes(m.id));
   const completedAssessments = Object.keys(state.completed).length;
+  const [progressToast, setProgressToast] = useState2(null);
+  const logProgress = (goalId) => {
+    state.bumpGoal(goalId, 10);
+    if (progressToast?.timer) clearTimeout(progressToast.timer);
+    const timer = setTimeout(() => setProgressToast(null), 5000);
+    setProgressToast({ goalId, undone: false, timer });
+  };
+
+  const undoProgress = () => {
+    if (!progressToast) return;
+    clearTimeout(progressToast.timer);
+    state.bumpGoal(progressToast.goalId, -10);
+    const timer = setTimeout(() => setProgressToast(null), 2000);
+    setProgressToast({ ...progressToast, undone: true, timer });
+  };
+
+  const markComplete = (g) => {
+    state.markGoalComplete(g.id);
+    state.onCelebrate({ goalId: g.id, goalTitle: g.title });
+  };
+
+  const activeGoals = state.goals.filter(g => !g.completed);
+  const doneGoals   = state.goals.filter(g => g.completed);
 
   return (
-    <div style={{ padding: '14px 18px 28px', fontFamily: 'Public Sans, system-ui' }}>
+    <div style={{ padding: '14px 18px 28px', fontFamily: 'Public Sans, system-ui', position: 'relative' }}>
       {/* Profile header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
         <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--cr)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 26, fontWeight: 700, fontFamily: 'Newsreader, Georgia, serif' }}>{(state.userName || 'C').charAt(0).toUpperCase()}</div>
@@ -1773,47 +1847,53 @@ function ProfileScreen({ state, scoresPct, overallPct, addingGoal, setAddingGoal
       {/* Goals */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
         <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.4, color: 'var(--mt)' }}>DEVELOPMENT GOALS</p>
-        <button onClick={() => setAddingGoal(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cr)', fontSize: 11, fontWeight: 700, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 3 }}>
-          + New Goal
-        </button>
+        <button onClick={() => setAddingGoal(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cr)', fontSize: 11, fontWeight: 700, fontFamily: 'inherit' }}>+ New Goal</button>
       </div>
 
       {addingGoal && <NewGoalForm state={state} close={() => setAddingGoal(false)}/>}
 
-      {state.goals.map(g => {
+      {[...activeGoals, ...doneGoals].map(g => {
         const cat = CATEGORIES[g.cat];
         return (
-          <div key={g.id} style={{ background: 'var(--wh)', border: '1.5px solid var(--bd)', borderRadius: 16, padding: 14, marginBottom: 10 }}>
+          <div key={g.id} style={{ background: 'var(--wh)', border: g.completed ? '1.5px solid #2A6A30' : '1.5px solid var(--bd)', borderRadius: 16, padding: 14, marginBottom: 10 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
               <div style={{ flex: 1 }}>
-                <p style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: 1.1, color: cat.color, marginBottom: 3 }}>{cat.title.toUpperCase()}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                  <p style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: 1.1, color: cat.color }}>{cat.title.toUpperCase()}</p>
+                  {g.completed && <span style={{ fontSize: 9, fontWeight: 700, background: '#EBF5EC', color: '#2A6A30', borderRadius: 20, padding: '2px 7px' }}>Completed ✓</span>}
+                </div>
                 <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--tx)', lineHeight: 1.3, fontFamily: 'Newsreader, Georgia, serif' }}>{g.title}</p>
                 <p style={{ fontSize: 11, color: 'var(--mt)', marginTop: 3 }}>Due {g.due}</p>
               </div>
-              <span style={{ fontFamily: 'Newsreader, Georgia, serif', fontSize: 18, fontWeight: 700, color: cat.color }}>{g.progress}%</span>
+              <span style={{ fontFamily: 'Newsreader, Georgia, serif', fontSize: 18, fontWeight: 700, color: g.completed ? '#2A6A30' : cat.color }}>{g.progress}%</span>
             </div>
             <div style={{ height: 6, background: 'var(--bd)', borderRadius: 3, overflow: 'hidden', marginBottom: 10 }}>
-              <div style={{ height: '100%', width: `${g.progress}%`, background: cat.color, borderRadius: 3, transition: 'width .5s' }}/>
+              <div style={{ height: '100%', width: `${g.progress}%`, background: g.completed ? '#2A6A30' : cat.color, borderRadius: 3, transition: 'width .5s' }}/>
             </div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: g.completed ? 0 : 11 }}>
               {g.milestones.map((m, i) => {
-                const done = (i + 1) / g.milestones.length * 100 <= g.progress;
+                const done = g.completed || (i + 1) / g.milestones.length * 100 <= g.progress;
                 return (
-                  <span key={i} style={{ fontSize: 10, padding: '3px 9px', borderRadius: 12, background: done ? cat.light : 'transparent', color: done ? cat.color : 'var(--mt)', border: done ? 'none' : '1px solid var(--bd)', fontWeight: done ? 700 : 500 }}>
+                  <span key={i} style={{ fontSize: 10, padding: '3px 9px', borderRadius: 12, background: done ? (g.completed ? '#EBF5EC' : cat.light) : 'transparent', color: done ? (g.completed ? '#2A6A30' : cat.color) : 'var(--mt)', border: done ? 'none' : '1px solid var(--bd)', fontWeight: done ? 700 : 500 }}>
                     {done && '✓ '}{m}
                   </span>
                 );
               })}
             </div>
-            <div style={{ display: 'flex', gap: 8, marginTop: 11 }}>
-              <button onClick={() => state.bumpGoal(g.id, 10)} style={{ flex: 1, background: cat.color, color: '#fff', border: 'none', borderRadius: 9, padding: '7px', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>+ Log Progress</button>
-              <button onClick={() => state.removeGoal(g.id)} style={{ background: 'var(--wh)', color: 'var(--mt)', border: '1.5px solid var(--bd)', borderRadius: 9, padding: '7px 12px', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Archive</button>
-            </div>
+            {!g.completed && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button onClick={() => logProgress(g.id)} style={{ flex: 1, background: cat.color, color: '#fff', border: 'none', borderRadius: 9, padding: '8px', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>+ Log Progress</button>
+                  <button onClick={() => state.removeGoal(g.id)} style={{ background: 'var(--wh)', color: 'var(--mt)', border: '1.5px solid var(--bd)', borderRadius: 9, padding: '8px 12px', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Archive</button>
+                </div>
+                <button onClick={() => markComplete(g)} style={{ width: '100%', background: 'transparent', color: '#2A6A30', border: '1.5px solid #2A6A30', borderRadius: 9, padding: '7px', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Mark as Completed</button>
+              </div>
+            )}
           </div>
         );
       })}
 
-      {/* Earned badges */}
+      {/* Enrolled credentials */}
       {enrolledMicros.length > 0 && (
         <>
           <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.4, color: 'var(--mt)', margin: '20px 0 10px' }}>ENROLLED CREDENTIALS</p>
@@ -1833,24 +1913,52 @@ function ProfileScreen({ state, scoresPct, overallPct, addingGoal, setAddingGoal
           })}
         </>
       )}
+
+      {/* Progress toast */}
+      {progressToast && (
+        <ProgressToast
+          msg={progressToast.undone ? 'Progress removed' : 'Progress logged ✓'}
+          onUndo={progressToast.undone ? null : undoProgress}
+          onClose={() => setProgressToast(null)}
+        />
+      )}
+
     </div>
   );
 }
+
+const MILESTONE_PRESETS = ['Plan', 'Draft', 'Research', 'Review', 'Submit', 'Present', 'Complete'];
 
 function NewGoalForm({ state, close }) {
   const [title, setTitle] = useState2('');
   const [cat, setCat] = useState2('research');
   const [due, setDue] = useState2('Dec 31');
+  const [milestones, setMilestones] = useState2([]);
+  const [customInput, setCustomInput] = useState2('');
+  const [showCustom, setShowCustom] = useState2(false);
+
+  const togglePreset = (m) => setMilestones(prev =>
+    prev.includes(m) ? prev.filter(x => x !== m) : [...prev, m]
+  );
+
+  const addCustom = () => {
+    const val = customInput.trim();
+    if (val && !milestones.includes(val)) setMilestones(prev => [...prev, val]);
+    setCustomInput('');
+    setShowCustom(false);
+  };
+
   const submit = () => {
     if (!title.trim()) return;
-    state.addGoal({ id: 'g' + Date.now(), title, cat, due, progress: 0, milestones: ['Plan', 'Start', 'Mid-point', 'Complete'] });
+    state.addGoal({ id: 'g' + Date.now(), title, cat, due, progress: 0, milestones: milestones.length ? milestones : ['Plan', 'Complete'] });
     close();
   };
+
   return (
-    <div style={{ background: 'var(--wh)', border: `2px solid var(--cr)`, borderRadius: 16, padding: 14, marginBottom: 12 }}>
+    <div style={{ background: 'var(--wh)', border: '2px solid var(--cr)', borderRadius: 16, padding: 14, marginBottom: 12 }}>
       <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--tx)', marginBottom: 11, fontFamily: 'Newsreader, Georgia, serif' }}>New Development Goal</p>
       <input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Submit conference paper"
-        style={{ width: '100%', border: '1.5px solid var(--bd)', borderRadius: 9, padding: '9px 11px', fontSize: 13, marginBottom: 10, outline: 'none', fontFamily: 'inherit' }}
+        style={{ width: '100%', border: '1.5px solid var(--bd)', borderRadius: 9, padding: '9px 11px', fontSize: 13, marginBottom: 10, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
         onFocus={e => e.target.style.borderColor = 'var(--cr)'}
         onBlur={e => e.target.style.borderColor = 'var(--bd)'}/>
       <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--mt)', marginBottom: 6, letterSpacing: 0.5 }}>CATEGORY</p>
@@ -1862,9 +1970,44 @@ function NewGoalForm({ state, close }) {
           </button>
         ))}
       </div>
-      <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--mt)', marginBottom: 6, letterSpacing: 0.5 }}>DUE</p>
+      <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--mt)', marginBottom: 6, letterSpacing: 0.5 }}>DUE DATE</p>
       <input value={due} onChange={e => setDue(e.target.value)} placeholder="e.g. Dec 31"
-        style={{ width: '100%', border: '1.5px solid var(--bd)', borderRadius: 9, padding: '9px 11px', fontSize: 13, marginBottom: 12, outline: 'none', fontFamily: 'inherit' }}/>
+        style={{ width: '100%', border: '1.5px solid var(--bd)', borderRadius: 9, padding: '9px 11px', fontSize: 13, marginBottom: 11, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}/>
+      <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--mt)', marginBottom: 7, letterSpacing: 0.5 }}>MILESTONES</p>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
+        {MILESTONE_PRESETS.map(m => {
+          const sel = milestones.includes(m);
+          return (
+            <button key={m} onClick={() => togglePreset(m)}
+              style={{ padding: '5px 11px', borderRadius: 16, fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', border: sel ? '1.5px solid var(--cr)' : '1.5px solid var(--bd)', background: sel ? 'var(--lcr)' : 'var(--wh)', color: sel ? 'var(--cr)' : 'var(--mt)', transition: 'all .15s' }}>
+              {sel && '✓ '}{m}
+            </button>
+          );
+        })}
+        {milestones.filter(m => !MILESTONE_PRESETS.includes(m)).map(m => (
+          <button key={m} onClick={() => setMilestones(prev => prev.filter(x => x !== m))}
+            style={{ padding: '5px 11px', borderRadius: 16, fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', border: '1.5px solid var(--cr)', background: 'var(--lcr)', color: 'var(--cr)' }}>
+            ✓ {m} ×
+          </button>
+        ))}
+        {showCustom ? (
+          <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+            <input autoFocus value={customInput} onChange={e => setCustomInput(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') addCustom(); if (e.key === 'Escape') setShowCustom(false); }}
+              placeholder="Type milestone…"
+              style={{ border: '1.5px solid var(--cr)', borderRadius: 9, padding: '4px 9px', fontSize: 11, outline: 'none', fontFamily: 'inherit', width: 120 }}/>
+            <button onClick={addCustom} style={{ background: 'var(--cr)', color: '#fff', border: 'none', borderRadius: 8, padding: '5px 10px', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Add</button>
+          </div>
+        ) : (
+          <button onClick={() => setShowCustom(true)}
+            style={{ padding: '5px 10px', borderRadius: 16, fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', border: '1.5px dashed var(--bd)', background: 'transparent', color: 'var(--mt)' }}>
+            + Add custom
+          </button>
+        )}
+      </div>
+      {milestones.length > 0 && (
+        <p style={{ fontSize: 10, color: 'var(--mt)', marginBottom: 10 }}>{milestones.length} milestone{milestones.length > 1 ? 's' : ''} selected</p>
+      )}
       <div style={{ display: 'flex', gap: 8 }}>
         <button onClick={submit} style={{ flex: 1, background: 'var(--cr)', color: '#fff', border: 'none', borderRadius: 10, padding: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Create Goal</button>
         <button onClick={close} style={{ background: 'var(--wh)', color: 'var(--mt)', border: '1.5px solid var(--bd)', borderRadius: 10, padding: '10px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
@@ -1873,7 +2016,7 @@ function NewGoalForm({ state, close }) {
   );
 }
 
-Object.assign(window, { ResourcesScreen, ProfileScreen });
+Object.assign(window, { ResourcesScreen, ProfileScreen, ConfettiOverlay, ProgressToast });
 
 </script>
 
@@ -2634,6 +2777,7 @@ function App() {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [detailItem, setDetailItem] = useState(null);
   const [toast, setToast] = useState(null);
+  const [celebration, setCelebration] = useState(null);
   const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
@@ -2652,9 +2796,10 @@ function App() {
   });
   const addGoal = (g) => setGoals((prev) => [g, ...prev]);
   const removeGoal = (id) => setGoals((prev) => prev.filter((g) => g.id !== id));
-  const bumpGoal = (id, n) => setGoals((prev) => prev.map((g) => g.id === id ? { ...g, progress: Math.min(100, g.progress + n) } : g));
+  const bumpGoal = (id, n) => setGoals((prev) => prev.map((g) => g.id === id ? { ...g, progress: Math.min(100, Math.max(0, g.progress + n)) } : g));
+  const markGoalComplete = (id) => setGoals((prev) => prev.map((g) => g.id === id ? { ...g, completed: true, progress: 100 } : g));
 
-  const state = { completed, enrolled, goals, toggleEnroll, addGoal, removeGoal, bumpGoal, resourcesTab, userName: tweaks.userName, userLastName: tweaks.userLastName, userLevel: tweaks.userLevel, userYear: tweaks.userYear, userMajor: tweaks.userMajor, openCalendar: () => setCalendarOpen(true), openDetail: (item, kind) => setDetailItem({ item, kind }) };
+  const state = { completed, enrolled, goals, toggleEnroll, addGoal, removeGoal, bumpGoal, markGoalComplete, onCelebrate: setCelebration, resourcesTab, userName: tweaks.userName, userLastName: tweaks.userLastName, userLevel: tweaks.userLevel, userYear: tweaks.userYear, userMajor: tweaks.userMajor, openCalendar: () => setCalendarOpen(true), openDetail: (item, kind) => setDetailItem({ item, kind }) };
 
   const scoresPct = useMemo(() => {
     const out = {};
@@ -2771,6 +2916,7 @@ function App() {
           {detailItem && <ResourceDetailModal item={detailItem.item} kind={detailItem.kind} enrolled={enrolled} toggleEnroll={toggleEnroll} onClose={() => setDetailItem(null)}/>}
           {toast && <RegistrationToast title={toast.title} kind={toast.kind} onClose={() => setToast(null)}/>}
           {retakeModal && <RetakeModal catId={retakeModal} onClose={() => setRetakeModal(null)} onRetake={startRetake} onViewResults={viewResults}/>}
+          {celebration && <ConfettiOverlay goalTitle={celebration.goalTitle} onDone={() => setCelebration(null)}/>}
         </div>
         )}
       </IOSDevice>
