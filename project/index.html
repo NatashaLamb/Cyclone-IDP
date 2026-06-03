@@ -2032,13 +2032,108 @@ Object.assign(window, { ResourcesScreen, ProfileScreen, ConfettiOverlay, Progres
 
 <script type="text/babel">
 // Detail modal — used for both Workshops and Micro-Credentials
-const { useState: useStateD } = React;
+const { useState: useStateD, useEffect: useEffectD } = React;
 
+function CopyToast({ onDone }) {
+  useEffectD(() => {
+    const t = setTimeout(onDone, 2000);
+    return () => clearTimeout(t);
+  }, []);
+  return (
+    <div style={{
+      position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+      background: '#1C1208', color: '#fff', borderRadius: 20, padding: '7px 16px',
+      fontSize: 12.5, fontWeight: 600, whiteSpace: 'nowrap', zIndex: 300,
+      animation: 'fade .2s ease', boxShadow: '0 4px 16px rgba(0,0,0,0.3)', pointerEvents: 'none',
+    }}>Link copied ✓</div>
+  );
+}
+
+function ShareSheet({ item, isMicro, onClose, onCopied }) {
+  let dateStr = '';
+  if (!isMicro && item.date) {
+    const dt = new Date(item.date + 'T00:00:00');
+    dateStr = dt.toLocaleDateString('en', { weekday: 'long', month: 'long', day: 'numeric' });
+  }
+  const fullText = isMicro
+    ? `${item.title}\nProvider: ${item.provider}\nDuration: ${item.duration}\n\n${item.desc}`
+    : `${item.title}\n${dateStr} · ${item.time} (${item.duration})\n${item.loc}\n\n${item.desc}`;
+  const shortText = isMicro
+    ? `${item.title} — ${item.provider} · ${item.duration}`
+    : `${item.title} — ${dateStr} · ${item.time}, ${item.loc}`;
+
+  const handleCopy = async () => {
+    try { await navigator.clipboard.writeText(fullText); } catch (_) {}
+    onCopied();
+    onClose();
+  };
+  const handleEmail = () => {
+    window.open(`mailto:?subject=${encodeURIComponent(item.title)}&body=${encodeURIComponent(fullText)}`, '_self');
+    onClose();
+  };
+  const handleSMS = () => {
+    window.open(`sms:?body=${encodeURIComponent(shortText)}`, '_self');
+    onClose();
+  };
+  const handleNative = async () => {
+    try { await navigator.share({ title: item.title, text: fullText }); } catch (_) {}
+    onClose();
+  };
+
+  const rows = [
+    {
+      icon: <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>,
+      label: 'Copy Link', action: handleCopy,
+    },
+    {
+      icon: <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
+      label: 'Share via Email', action: handleEmail,
+    },
+    {
+      icon: <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>,
+      label: 'Share via Text', action: handleSMS,
+    },
+    {
+      icon: <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
+      label: 'More Options', action: handleNative,
+    },
+  ];
+
+  return (
+    <div onClick={onClose}
+      style={{ position: 'absolute', inset: 0, background: 'rgba(28,18,8,0.35)', zIndex: 200, display: 'flex', alignItems: 'flex-end', borderRadius: 'inherit' }}>
+      <style>{`@keyframes shareSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }`}</style>
+      <div onClick={e => e.stopPropagation()}
+        style={{ width: '100%', background: '#fff', borderRadius: '20px 20px 0 0', paddingBottom: 8, animation: 'shareSlideUp .28s cubic-bezier(.32,.72,0,1)', fontFamily: 'Public Sans, system-ui' }}>
+        <div style={{ width: 36, height: 4, background: '#E8DFC8', borderRadius: 2, margin: '10px auto 0' }}/>
+        <p style={{ textAlign: 'center', fontWeight: 700, fontSize: 14, color: 'var(--tx)', padding: '14px 20px 12px' }}>
+          Share this {isMicro ? 'credential' : 'workshop'}
+        </p>
+        <div style={{ height: 1, background: 'var(--bd)' }}/>
+        {rows.map(({ icon, label, action }, idx) => (
+          <button key={label} onClick={action}
+            style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, padding: '14px 22px', background: 'none', border: 'none', borderBottom: idx < rows.length - 1 ? '1px solid var(--bd)' : 'none', cursor: 'pointer', fontSize: 14.5, fontWeight: 500, color: 'var(--tx)', fontFamily: 'inherit', textAlign: 'left' }}>
+            <span style={{ color: 'var(--cr)', flexShrink: 0, display: 'flex' }}>{icon}</span>
+            {label}
+          </button>
+        ))}
+        <div style={{ padding: '10px 14px 4px' }}>
+          <button onClick={onClose}
+            style={{ width: '100%', padding: '13px', background: '#F0EAD8', border: 'none', borderRadius: 12, cursor: 'pointer', fontSize: 15, fontWeight: 600, color: 'var(--nt)', fontFamily: 'inherit' }}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 function ResourceDetailModal({ item, kind, enrolled, toggleEnroll, onClose }) {
   if (!item) return null;
   const cat = CATEGORIES[item.cat];
   const isMicro = kind === 'micro';
   const isEnrolled = enrolled.includes(item.id);
+  const [shareOpen, setShareOpen] = useStateD(false);
+  const [copyToast, setCopyToast] = useStateD(false);
 
   let dateStr = null;
   let dayN = null;
@@ -2054,17 +2149,23 @@ function ResourceDetailModal({ item, kind, enrolled, toggleEnroll, onClose }) {
     <div onClick={onClose}
       style={{ position: 'absolute', inset: 0, background: 'rgba(28,18,8,0.6)', zIndex: 110, display: 'flex', alignItems: 'flex-end', fontFamily: 'Public Sans, system-ui', animation: 'fade .2s ease' }}>
       <div onClick={(e) => e.stopPropagation()}
-        style={{ background: 'var(--cm)', width: '100%', borderRadius: '22px 22px 0 0', maxHeight: '94%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        style={{ background: 'var(--cm)', width: '100%', borderRadius: '22px 22px 0 0', maxHeight: '94%', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
 
         {/* Hero */}
         <div style={{ background: cat.color, padding: '18px 20px 22px', color: '#fff', position: 'relative' }}>
           {/* Drag handle */}
           <div style={{ width: 38, height: 4, background: 'rgba(255,255,255,0.4)', borderRadius: 2, margin: '0 auto 14px' }}/>
+          {/* Share */}
+          <button onClick={() => setShareOpen(true)} aria-label="Share"
+            style={{ position: 'absolute', top: 14, right: 52, width: 30, height: 30, borderRadius: '50%', background: 'rgba(255,255,255,0.18)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          </button>
           {/* Close */}
           <button onClick={onClose} aria-label="Close"
             style={{ position: 'absolute', top: 14, right: 14, width: 30, height: 30, borderRadius: '50%', background: 'rgba(255,255,255,0.18)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
+          {copyToast && <CopyToast onDone={() => setCopyToast(false)} />}
 
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,0.18)', borderRadius: 6, padding: '3px 9px', fontSize: 9.5, fontWeight: 700, letterSpacing: 0.7, marginBottom: 10 }}>
             {isMicro && (
@@ -2134,6 +2235,8 @@ function ResourceDetailModal({ item, kind, enrolled, toggleEnroll, onClose }) {
             {isEnrolled ? 'Registered' : 'Register'}
           </button>
         </div>
+
+        {shareOpen && <ShareSheet item={item} isMicro={isMicro} onClose={() => setShareOpen(false)} onCopied={() => setCopyToast(true)} />}
       </div>
     </div>
   );
