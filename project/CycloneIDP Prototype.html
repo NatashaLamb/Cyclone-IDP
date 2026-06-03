@@ -47,9 +47,13 @@ button { font-family: inherit; } input { font-family: inherit; }
   .phone-home-indicator { display: none !important; }
   .phone-status-bar { display: none !important; }
   .app-body { padding-top: env(safe-area-inset-top, 44px) !important; }
-  .scr-area { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)) !important; }
-  .nav-bar { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; z-index: 50 !important; padding-bottom: env(safe-area-inset-bottom, 0px) !important; }
-  .toast-container { position: fixed !important; bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important; }
+  .scr-area { padding-bottom: 64px !important; }
+  .nav-bar { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; z-index: 50 !important; }
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .nav-bar { padding-bottom: env(safe-area-inset-bottom) !important; }
+    .scr-area { padding-bottom: calc(64px + env(safe-area-inset-bottom)) !important; }
+    .toast-container { bottom: calc(72px + env(safe-area-inset-bottom)) !important; }
+  }
   .confetti-overlay { position: fixed !important; }
   .twk-panel { width: calc(100vw - 32px) !important; max-width: 280px !important; }
 }
