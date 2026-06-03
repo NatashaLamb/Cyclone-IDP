@@ -1852,13 +1852,13 @@ function ProfileScreen({ state, scoresPct, overallPct, addingGoal, setAddingGoal
       {/* Stats grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 22 }}>
         {[
-          { v: overallPct !== null ? `${overallPct}%` : '--', l: 'Portfolio' },
-          { v: completedAssessments, l: 'Assessed' },
-          { v: enrolledMicros.length, l: 'Enrolled' },
+          { v: overallPct !== null ? `${overallPct}%` : '--', l: 'Overall Skill Portfolio' },
+          { v: completedAssessments, l: 'Skills Assessed' },
+          { v: enrolledMicros.length, l: 'Workshop Enrolled' },
         ].map((s, i) => (
           <div key={i} style={{ background: 'var(--wh)', border: '1.5px solid var(--bd)', borderRadius: 14, padding: '12px 8px', textAlign: 'center' }}>
             <p style={{ fontFamily: 'Newsreader, Georgia, serif', fontSize: 22, fontWeight: 700, color: 'var(--cr)', lineHeight: 1 }}>{s.v}</p>
-            <p style={{ fontSize: 9.5, color: 'var(--mt)', marginTop: 4, letterSpacing: 0.5, fontWeight: 600 }}>{s.l.toUpperCase()}</p>
+            <p style={{ fontSize: 10, color: 'var(--mt)', marginTop: 5, fontWeight: 500, lineHeight: 1.3 }}>{s.l}</p>
           </div>
         ))}
       </div>
